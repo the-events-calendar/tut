@@ -45,7 +45,7 @@ class ReleaseDate extends Command {
 			->addArgument( 'repo', InputArgument::REQUIRED, 'Repo on which to set the release date' )
 			->addOption( 'release-date', '', InputOption::VALUE_OPTIONAL, 'Release date of version' )
 			->addOption( 'release-version', '', InputOption::VALUE_OPTIONAL, 'Version you are setting the date on' )
-			->addOption( 'branch', '', InputOption::VALUE_OPTIONAL, 'Perform a hard reset (recursively)' );
+			->addOption( 'branch', '', InputOption::VALUE_OPTIONAL, 'Branch on which to commit the release date' );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ) {

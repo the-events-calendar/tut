@@ -42,6 +42,7 @@ export PATH=/path/to/tut:$PATH
 |--|--|
 | [`analyze`](docs/commands/analyze.md) | Changelog entries for Hooks and Template changes |
 | [`build`](docs/commands/build.md) | Mass composer/npm/gulp building |
+| [`changed-views`](docs/commands/changed-views.md) | Find all view changes in a branch |
 | [`generate-css-override`](docs/commands/generate-css-override.md) | Finds CSS rules for the purposes of providing overrides. |
 | [`get-build-number`](docs/commands/get-build-number.md) | Gets the build number based on recent commit timestamp |
 | [`get-hash`](docs/commands/get-hash.md) | Gets current repo hash |
@@ -52,19 +53,6 @@ export PATH=/path/to/tut:$PATH
 | [`tbd`](docs/commands/tbd.md) | TBD Locator |
 | [`template-list`](docs/commands/template-list.md) | List templates in plugin |
 | [`version`](docs/commands/version.md) | Update version numbers |
-
-
-### `mtviews`: Find all view changes since last tagged release
-
-This script prints out a report of all changed views since the last tagged release.
-
-#### Usage
-
-Using terminal, run:
-
-```
-mtviews release/4.1
-```
 
 ### `mtsvndiff`: Compare WP.org zips with packaged zip
 

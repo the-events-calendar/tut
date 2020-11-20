@@ -12,6 +12,7 @@ $application = new Application();
 
 $application->add( new Commands\Analyze );
 $application->add( new Commands\Build );
+$application->add( new Commands\ChangedViews );
 $application->add( new Commands\Extension\Create );
 $application->add( new Commands\Extension\SetDependency );
 $application->add( new Commands\GenerateCSSOverride );
