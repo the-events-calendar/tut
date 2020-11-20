@@ -53,16 +53,3 @@ export PATH=/path/to/tut:$PATH
 | [`tbd`](docs/commands/tbd.md) | TBD Locator |
 | [`template-list`](docs/commands/template-list.md) | List templates in plugin |
 | [`version`](docs/commands/version.md) | Update version numbers |
-
-### `mtsvndiff`: Compare WP.org zips with packaged zip
-
-This script compares the directory structure and file names of a packaged zip with a WordPress zip.
-
-#### Usage
-
-Using terminal, run:
-
-```
-mtsvndiff
-```
-
