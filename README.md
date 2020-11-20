@@ -1,14 +1,16 @@
-# The Events Calendar Utilities
+# TEC Utilities
+
+**T**EC **UT**ilities (or `tut`) are a collection of tools for managing plugins.
 
 ## Installation
 
-1. Clone the repository `git clone git@github.com:moderntribe/tec-utils.git`
-1. Go to the new directory `cd tec-utils`.
+1. Clone the repository `git clone git@github.com:moderntribe/tut.git`
+1. Go to the new directory `cd tut`.
 1. Run `composer install`
 1. Add the cloned repo into your PATH (edit your `.bashrc` / `.bash_profile` / `.zshrc` or whatever)
 
 ```
-export PATH=/path/to/tec-utils:$PATH
+export PATH=/path/to/tut:$PATH
 ```
 
 ## Typical deploy workflow
