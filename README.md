@@ -1,38 +1,37 @@
-# Modern Tribe Plugin Packager
+# The Events Calendar Utilities
 
 ## Installation
 
-1. Clone the repository `git clone git@github.com:moderntribe/tribe-product-utils.git`
-1. Go to the new directory `cd tribe-product-utils`.
+1. Clone the repository `git clone git@github.com:moderntribe/tec-utils.git`
+1. Go to the new directory `cd tec-utils`.
 1. Run `composer install`
 1. Add the cloned repo into your PATH (edit your `.bashrc` / `.bash_profile` / `.zshrc` or whatever)
-1. (Optional) Make a copy of `mt-sample.json`, name it `mt.json` (you may need to adjust the file paths in the new file), and customize it.
 
 ```
-export PATH=/path/to/tribe-product-utils:$PATH
+export PATH=/path/to/tec-utils:$PATH
 ```
 
 ## Typical deploy workflow
 
 1. `cd` to your `wp-content/plugins` directory
 1. Run `npm install` and `npm update` in each of the plugins you'll be deploying
-1. Get the latest branches for all of the plugins that you are going to deploy via `mt sync --branch "branchname"`
+1. Get the latest branches for all of the plugins that you are going to deploy via `tut sync --branch "branchname"`
 1. Make sure the version numbers are set via `mtversion`
 1. Make sure the release dates in the changelog are accurate via `mtreleasedate`
 1. Locate all TBD references with `mt tbd` and update them with the appropriate date
 1. If you made commits for the version number or release date scripts, you'll want to push those changes up to GitHub via `mtpush`
 1. Make sure all the relevant `master` branches are nice and clean by running `mtmaster`
-1. Build the zip files (which also verifies version numbers) using [the bot](https://inside.tri.be/plugins-packaging-with-the-bot/) (preferred) or using `mt package --branch "branchname" --plugin "event-tickets" --final`
+1. Build the zip files (which also verifies version numbers) using [the bot](https://inside.tri.be/plugins-packaging-with-the-bot/) (preferred) or using `tut package --branch "branchname" --plugin "event-tickets" --final`
 1. Once you've pushed the packaged files to svn, run `mtsvndiff` to verify the svn repo has all of the required files and directories.
 
 ## Scripts
 
-### `mt analyze`: Changelog entries for Hooks and Template changes
+### `tut analyze`: Changelog entries for Hooks and Template changes
 
 On the end of the release the Developer responsible for the release will run this command to add the automated changelog entries for our users.
 
 ```
-$ mt analyze
+$ tut analyze
 
 event-tickets
 -------------
@@ -40,44 +39,44 @@ event-tickets
  * Tweak - Changed views: `blocks/rsvp`, `blocks/rsvp/content-inactive`, `blocks/rsvp/content`, `blocks/rsvp/form`, `blocks/rsvp/form/form`, `blocks/rsvp/form/submit-login`, `blocks/rsvp/form/submit`, `blocks/rsvp/status`, `blocks/rsvp/status/going-icon`, `blocks/rsvp/status/going`, `blocks/rsvp/status/not-going`, `blocks/tickets`, `blocks/tickets/content-inactive`, `blocks/tickets/content`, `blocks/tickets/item-inactive`, `blocks/tickets/item`, `registration/button-checkout`
 ```
 
-### `mt build`: Mass composer/npm/gulp building
+### `tut build`: Mass composer/npm/gulp building
 
 Goes into each plugin and runs composer, npm, and webpack where applicable. You can execute this from within the root of a plugin or from the `plugins/` directory.
 
 **Examples**
 ```bash
-mt build
+tut build
 ```
 
-### `mt generate-css-override`: Finds CSS rules for the purposes of providing overrides.
+### `tut generate-css-override`: Finds CSS rules for the purposes of providing overrides.
 
 Looks through CSS files to find rules that contain the provided search value and generates an override rule with the provided replace value.
 
 **Example**
 
 ```bash
-mt generate-css-override --search='"Helvetica Neue", Helvetica, -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif' --replace="font-family: inherit;"
+tut generate-css-override --search='"Helvetica Neue", Helvetica, -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif' --replace="font-family: inherit;"
 ```
 
-### `mt get-build-number`: Gets the build number based on recent commit timestamp
+### `tut get-build-number`: Gets the build number based on recent commit timestamp
 
 Grabs the build number based on the timestamp of the most recent commit.
 
 **Examples**
 ```bash
-mt get-build-number
+tut get-build-number
 ```
 
-### `mt get-hash`: Gets current repo hash
+### `tut get-hash`: Gets current repo hash
 
 Grabs the current short hash of whatever repo you are currently in.
 
 **Examples**
 ```bash
-mt get-hash
+tut get-hash
 ```
 
-### `mt sync`: Mass Git Syncing
+### `tut sync`: Mass Git Syncing
 
 If you wish to globally check out a specific branch across all of the
 Tribe plugins in a directory.
@@ -85,20 +84,20 @@ Tribe plugins in a directory.
 **Examples**
 ```sh
 # Pulls Current Release
-mt sync master
+tut sync master
 
 # Pulls Maintenance Release
-mt sync release/B20.01
+tut sync release/B20.01
 
-mt sync release/B20.01 -p tec,pro
+tut sync release/B20.01 -p tec,pro
 
-mt sync release/B20.01 --plugin tec --plugin pro
+tut sync release/B20.01 --plugin tec --plugin pro
 
 // Pushes Current Release
-mt sync release/B20.01 -d up
+tut sync release/B20.01 -d up
 ```
 
-### `mt version`: Updating version numbers
+### `tut version`: Updating version numbers
 
 When updating version numbers in one or more plugins, this script simplifies the task by asking a few questions and executing the needed file updates.
 
@@ -126,7 +125,7 @@ This is a simple script designed to help the Modern Tribe team package WordPress
 Using terminal, run:
 
 ```
-mt package
+tut package
 ```
 
 Packages zip files for release.
@@ -192,7 +191,7 @@ Using terminal, run:
 mtpush release/122
 ```
 
-### `mt tbd`: TBD locator
+### `tut tbd`: TBD locator
 
 This scripts informs you of all the places you need to update TBD references.
 
@@ -201,10 +200,10 @@ This scripts informs you of all the places you need to update TBD references.
 Using terminal, run:
 
 ```
-mt tbd
+tut tbd
 ```
 
-### `mt template-list`: List of templates
+### `tut template-list`: List of templates
 
 This scripts informs you of all the templates and their short descriptions so you can use them for KB purposes.
 
@@ -213,7 +212,7 @@ This scripts informs you of all the templates and their short descriptions so yo
 Using terminal, run:
 
 ```
-mt template-list
+tut template-list
 ```
 
 ### `mtviews`: Find all view changes since last tagged release
@@ -253,13 +252,13 @@ When it comes time to prepping a release, here are the steps that _I_ go through
 
 First I make sure I have the latest and greatest.
 
-`mt sync develop`
+`tut sync develop`
 
 ### 2. Updating the version numbers in the appropriate plugins
 
 This script goes to all the relevant files and updates the version numbers to the values that you specify when prompted.  It then shows you a diff and asks if you want to commit the version changes.
 
-`mt version`
+`tut version`
 
 ### 3. Merge stuff into master and create the zip files
 
@@ -267,7 +266,7 @@ This script optionally merges a branch into master and then does a version numbe
 
 `mtdeploy`
 
-The `mt version` and `mtdeploy` scripts prompt you for the plugin(s) you want to twiddle and package.
+The `tut version` and `mtdeploy` scripts prompt you for the plugin(s) you want to twiddle and package.
 
 ## Credits
 
