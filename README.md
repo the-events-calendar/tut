@@ -54,20 +54,6 @@ export PATH=/path/to/tut:$PATH
 | [`version`](docs/commands/version.md) | Update version numbers |
 
 
-### `mtreleasedate`: Update the release date in the changelog
-
-This script finds the provided version number in the changelog and updates the release date associated with it.
-
-#### Usage
-
-Using terminal, run:
-
-```
-mtreleasedate
-```
-
-This will walk you through interactive steps for setting version numbers.
-
 ### `mtviews`: Find all view changes since last tagged release
 
 This script prints out a report of all changed views since the last tagged release.
