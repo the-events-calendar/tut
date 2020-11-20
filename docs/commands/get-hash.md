@@ -10,3 +10,16 @@ Grabs the current short hash of whatever repo you are currently in.
 tut get-hash
 ```
 
+## Args
+
+```
+Usage:
+  get-hash
+
+Options:
+  -h, --help            Display this help message
+
+Help:
+  Gets the currently checked out git hash
+
+```

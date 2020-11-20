@@ -9,3 +9,16 @@ Grabs the build number based on the timestamp of the most recent commit.
 ```bash
 tut get-build-number
 ```
+
+## Args
+
+```
+Usage:
+  get-build-number
+
+Options:
+  -h, --help            Display this help message
+
+Help:
+  Get repo build number (timestamp of last commit)
+```
