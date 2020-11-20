@@ -1,6 +1,14 @@
 {
 	"plugins": [
 		{
+			"name"      : "tribe-common",
+			"bootstrap" : "tribe-common.php",
+			"main"      : "src/Tribe/Main.php",
+			"version"   : "VERSION",
+			"alias"     : [ "common" ],
+			"free"      : true
+		},
+		{
 			"name"      : "the-events-calendar",
 			"bootstrap" : "the-events-calendar.php",
 			"main"      : "src/Tribe/Main.php",
@@ -89,14 +97,6 @@
 			"free"      : true
 		},
 		{
-			"name"      : "tribe-common",
-			"bootstrap" : "tribe-common.php",
-			"main"      : "src/Tribe/Main.php",
-			"version"   : "VERSION",
-			"alias"     : [ "common" ],
-			"free"      : true
-		},
-		{
 			"name"      : "image-widget-plus",
 			"bootstrap" : "image-widget-plus.php",
 			"main"      : "src/Tribe/Main.php",
@@ -127,6 +127,16 @@
 			"version"   : "const VERSION",
 			"alias"     : [ "lec", "loxi-plugin" ],
 			"free"      : true
+		}
+	],
+	"submodules": [
+		{
+			"name": "tribe-common-styles",
+			"path": "src/resources/postcss/utilities"
+		},
+		{
+			"name": "tribe-common",
+			"path": "common"
 		}
 	]
 }

@@ -1,6 +1,7 @@
 <?php
 namespace TUT\Commands;
 
+use Symfony\Component\Console\Input\ArrayInput;
 use TUT\Command as Command;
 
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,31 +24,9 @@ class SubmoduleSync extends Command {
 	protected $branches = [];
 
 	/**
-	 * @var array Plugins to sync
+	 * @var string GitHub org.
 	 */
-	protected $plugins = [
-		// tribe common is first to make sure its hashes are set appropriately FIRST
-		'tribe-common-styles',
-		'tribe-common',
-		// THEN the rest of the plugins
-		'event-tickets',
-		'event-tickets-plus',
-		'events-community',
-		'events-community-tickets',
-		'events-eventbrite',
-		'events-filterbar',
-		'events-pro',
-		'image-widget-plus',
-		'the-events-calendar',
-	];
-
-	/**
-	 * @var array submodules
-	 */
-	protected $submodules = [
-		'tribe-common'        => 'common',
-		'tribe-common-styles' => 'src/resources/postcss/utilities',
-	];
+	protected $org = 'moderntribe';
 
 	protected function configure() {
 		parent::configure();
@@ -62,147 +41,150 @@ class SubmoduleSync extends Command {
 	 * Execute the process
 	 */
 	protected function execute( InputInterface $input, OutputInterface $output ) {
+		$this->get_github_client();
+
 		$this->tmp_dir = sys_get_temp_dir();
+		$this->tmp_dir .= '/' . uniqid( '', true );
+
+		if ( ! file_exists( $this->tmp_dir ) ) {
+			mkdir( $this->tmp_dir );
+		}
 
 		// prep submodules and analyze them
-		foreach ( $this->submodules as $submodule => $submodule_path ) {
-			$this->prep_and_analyze_repo( $submodule );
+		foreach ( $this->config->submodules as $submodule ) {
+			$submodule = (object) $submodule;
+
+			// Skip tribe-common because it is prepped in the plugin loop.
+			if ( 'tribe-common' === $submodule->name ) {
+				continue;
+			}
+
+			$this->prep_branches( $submodule->name );
 		}
 
 		$submodule_branches = [];
 
-		foreach ( $this->plugins as $plugin ) {
-			$this->prep_and_analyze_repo( $plugin );
+		foreach ( $this->config->plugins as $plugin ) {
+			$plugin = (object) $plugin;
 
-			chdir ( "{$this->tmp_dir}/{$plugin}" );
+			$this->io->write( '<fg=cyan>checking branches on</> <fg=yellow>' . $plugin->name . '</><fg=cyan>:</>' );
+
+			$updated_hash = false;
+
+			$this->prep_branches( $plugin->name );
 
 			// loop over the possible submodules and sync if the submodule exists in the plugin
-			foreach ( $this->submodules as $submodule_repo => $submodule_path ) {
-				$submodule_branches[ $submodule_repo ] = array_intersect( $this->branches[ $submodule_repo ], $this->branches[ $plugin ] );
+			foreach ( $this->config->submodules as $submodule ) {
+				$submodule = (object) $submodule;
 
-				foreach ( $submodule_branches[ $submodule_repo ] as $branch ) {
-					$this->maybe_update_hash( $plugin, $branch, $submodule_repo, $submodule_path );
+				if ( $plugin->name === $submodule->name ) {
+					continue;
+				}
+
+				$branches_for_submodule = array_keys( $this->branches[ $submodule->name ] );
+				$branches_for_plugin    = array_keys( $this->branches[ $plugin->name ] );
+
+				$submodule_branches[ $submodule->name ] = array_intersect( $branches_for_submodule, $branches_for_plugin );
+
+				foreach ( $submodule_branches[ $submodule->name ] as $branch ) {
+					if ( 'master' === $branch ) {
+						continue;
+					}
+
+					if ( ! $this->get_github_client()->api( 'repo' )->contents()->exists( $this->org, $plugin->name, $submodule->path, $branch ) ) {
+						continue;
+					}
+
+					$plugin_submodule_hash = $this->get_github_client()->api( 'repo' )->contents()->show( $this->org, $plugin->name, $submodule->path, $branch );
+					$upstream_submodule_hash = $this->branches[ $submodule->name ][ $branch ];
+
+					if ( empty( $plugin_submodule_hash['sha'] ) ) {
+						$this->io->error( "Unable to fetch the submodule hash from {$plugin->name}" );
+						exit( 1 );
+					}
+
+					$plugin_submodule_hash = $plugin_submodule_hash['sha'];
+
+					if ( $plugin_submodule_hash != $upstream_submodule_hash ) {
+						$this->io->newLine();
+						$this->io->writeln( "  <fg=red>x</> Hash mismatch on {$branch} (committed: {$plugin_submodule_hash}, should be: {$upstream_submodule_hash} )!" );
+						$this->update_hash( $plugin, $branch, $submodule, $output );
+						$updated_hash = true;
+					}
 				}
 			}
 
-			// re-prep tribe-common so that we get the latest hashes
-			if ( 'tribe-common' === $plugin ) {
-				$this->prep_and_analyze_repo( $plugin );
+			if ( ! $updated_hash ) {
+				$this->io->write( " <fg=green>✓</>\n" );
 			}
 
-			chdir( '..' );
+			// re-prep tribe-common so that we get the latest hashes
+			if ( 'tribe-common' === $plugin->name && $updated_hash ) {
+				$this->prep_branches( $plugin->name );
+			}
+		}
+
+		if ( $this->tmp_dir != '/' ) {
+			$this->run_process( "rm -rf {$this->tmp_dir}" );
 		}
 	}
 
-	protected function maybe_update_hash( $repo, $branch, $repo_to_sync, $dir ) {
-		$branch = str_replace( 'origin/', '', $branch );
-		$this->run_process( 'git reset --hard', false );
-		$this->run_process( "git checkout {$branch}", true );
-		$this->run_process( 'git reset --hard HEAD~5', false );
-		$this->run_process( "git branch --set-upstream-to=origin/{$branch} {$branch}", true );
-		$this->run_process( 'git pull', true );
-		$this->run_process( 'git submodule update --init --recursive', true );
+	protected function update_hash( $plugin, $branch, $submodule, $output ) {
+		$upstream_submodule_hash = $this->branches[ $submodule->name ][ $branch ];
 
-		if ( ! file_exists( $dir ) ) {
-			return;
+		$command = $this->getApplication()->find( 'git:clone' );
+		$arguments = [
+			'--repo'          => "{$this->org}/{$plugin->name}",
+			'--path'          => $this->tmp_dir,
+			'--alias'         => $plugin->name,
+			'--shallow-clone' => true,
+			'--single-branch' => true,
+			'--ref'           => $branch,
+		];
+
+		$clone_input = new ArrayInput( $arguments );
+		if ( 0 !== $command->run( $clone_input, $output ) ) {
+			$this->io->error( "Could not clone {$plugin->name}!" );
+			exit( 1 );
 		}
 
 		$current_dir = getcwd();
 
-		chdir( $dir );
+		chdir( "{$this->tmp_dir}/{$plugin->name}" );
 
-		// get current hash of common
-		$process = $this->run_process( 'git rev-parse HEAD', false );
-		$current_common_hash = $process->getOutput();
+		$this->run_process( 'git submodule update --init --recursive' );
 
-		$this->run_process( 'git reset --hard', false );
-		$this->run_process( "git checkout {$branch}", true );
-		$this->run_process( 'git reset --hard HEAD~5', false );
-		$this->run_process( "git branch --set-upstream-to=origin/{$branch} {$branch}", true );
-		$this->run_process( 'git pull', true );
+		chdir( $submodule->path );
 
-		// get current hash
-		$process = $this->run_process( 'git rev-parse HEAD', true );
-		$hash = $process->getOutput();
+		$this->run_process( 'git fetch' );
+		$process = $this->run_process( 'git checkout ' . $upstream_submodule_hash );
+
+		chdir( "{$this->tmp_dir}/{$plugin->name}" );
+
+		$this->io->writeln( "<fg=cyan>Committing {$submodule->name} {$branch}@{$upstream_submodule_hash} to {$plugin->name} {$branch}</>" );
+		$this->run_process( 'git commit ' . $submodule->path . ' -m ":fast_forward: https://github.com/moderntribe/' . $plugin->name . '/commit/' . $upstream_submodule_hash . '"' );
+		$this->run_process( 'git push origin HEAD' );
 
 		chdir( $current_dir );
-
-		if ( $current_common_hash === $hash ) {
-			$this->io->writeln( "<fg=green>{$repo_to_sync} hash {$hash} in {$repo} {$branch} is already up to date</>" );
-			return;
-		}
-
-		$this->io->writeln( "<fg=cyan>Committing {$repo_to_sync} {$branch}@{$hash} to {$repo} {$branch}</>" );
-
-		$this->run_process( "git checkout {$branch}", true );
-		$this->run_process( 'git branch', true );
-		$this->run_process( 'git commit ' . $dir . ' -m ":fast_forward: https://github.com/moderntribe/' . $repo_to_sync . '/commit/' . $hash . '"' );
-		$this->run_process( "git push origin {$branch}" );
 	}
 
 	/**
 	 * Prepares a repository for the branch analysis/submodule sync process
 	 */
-	protected function prep_and_analyze_repo( $repo ) {
-		$this->io->writeln( '<fg=cyan>prepping ' . $repo . '</>' );
+	protected function prep_branches( $repo ) {
+		$client = $this->get_github_client();
+		$branches = $client->api( 'repo' )->branches( $this->org, $repo );
 
-		chdir( $this->tmp_dir );
+		$branches = array_filter( $branches, static function( $v, $k ) {
+			return ! preg_match( '/^dependabot/', $v['name'] );
+		}, ARRAY_FILTER_USE_BOTH );
 
-		// get the latest of the repo
-		if ( ! file_exists( $repo ) ) {
-			$process = $this->run_process( 'git clone git@github.com:moderntribe/' . $repo . '.git' );
+		foreach ( $branches as $branch ) {
+			$this->branches[ $repo ][ $branch['name'] ] = $branch['commit']['sha'];
 		}
 
-		chdir( $repo );
-
-		// fetch all branches
-		$process = $this->run_process( 'git pull --all', false );
-
-		// prune remote branches that no longer exist
-		$process = $this->run_process( 'git remote prune origin', false );
-
-		// prune local branches that don't exist in the remote
-		// grab all remote branches
-		$process = $this->run_process( 'git branch -r | awk \'{print $1}\'', false );
-		$remote_branches = array_filter( array_map( 'trim', explode( "\n", $process->getOutput() ) ) );
-
-		// grab all branches tracking remote branches
-		$process = $this->run_process( 'git branch -vv | grep origin', false );
-		$branches_tracking_remotely = array_filter( array_map( 'trim', explode( "\n", $process->getOutput() ) ) );
-
-		// for any tracking branch that doesn't exist in the remote branch list, delete it
-		foreach ( $branches_tracking_remotely as $key => $branch ) {
-			$remove = true;
-			foreach ( $remote_branches as $remote ) {
-				if ( false !== strpos( $branch, $remote ) ) {
-					continue;
-				}
-
-				$remove = false;
-				break;
-			}
-
-			if ( ! $remove ) {
-				continue;
-			}
-
-			preg_match( '/^\s*([^\s]+)/', $branch, $matches );
-			$process = $this->run_process( 'git branch -d ' . $matches[1], false );
-			$this->io->writeln( '<fg=red>PURGING ' . $matches[1] . '</>' );
+		if ( isset( $this->branches[ $repo ]['main'] ) ) {
+			$this->branches[ $repo ]['master'] = $this->branches[ $repo ]['main'];
 		}
-
-		// grab release and feature branches
-		$this->branches[ $repo ] = $this->get_branches( 'develop' );
-		$this->branches[ $repo ] = array_merge( $this->get_branches( 'release/*' ), $this->branches[ $repo ] );
-		$this->branches[ $repo ] = array_merge( $this->get_branches( 'feature/*' ), $this->branches[ $repo ] );
-
-		chdir( $this->tmp_dir );
-	}
-
-	protected function get_branches( $search ) {
-		$command = 'git branch -r | grep "' . $search . '" | grep -v HEAD | awk \'{print $1}\'';
-		$process = $this->run_process( $command, false );
-
-		return array_filter( array_map( 'trim', explode( "\n", $process->getOutput() ) ) );
 	}
 }

@@ -204,7 +204,7 @@ class Command extends \Symfony\Component\Console\Command\Command {
 			// cd into the plugin directory
 			chdir( $plugin_dir );
 
-			$this->execute_on_plugin( $plugin );
+			$this->execute_on_plugin( $plugin, $plugin_dir );
 
 			// go back a directory
 			chdir( '../' );
@@ -214,9 +214,7 @@ class Command extends \Symfony\Component\Console\Command\Command {
 		$this->io->writeln( '<info>-------------------</info>' );
 	}
 
-	public function execute_on_plugin( $plugin ) {
-
-	}
+	public function execute_on_plugin( $plugin ) {}
 
 	public function maybe_select_plugins_from_option() {
 		$available_plugins = __::pluck( $this->config->plugins, 'name' );
