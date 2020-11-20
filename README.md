@@ -58,10 +58,11 @@ export PATH=/path/to/tut:$PATH
 
 | Command | Description |
 |--|--|
+| [`git:clone`](docs/commands/git/clone.md) | Clone a repository |
 
 ## Extension Subcommands
 
 | Command | Description |
 |--|--|
-| [`extension:create`](docs/commands/extension-create.md) | Create a TEC/ET extension |
-| [`extension:set-dependency`](docs/commands/extension-set-dependency.md) | Modifies or adds a dependency to an extension repo on GitHub |
+| [`extension:create`](docs/commands/extension/create.md) | Create a TEC/ET extension |
+| [`extension:set-dependency`](docs/commands/extension/set-dependency.md) | Modifies or adds a dependency to an extension repo on GitHub |
