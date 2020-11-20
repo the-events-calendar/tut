@@ -738,4 +738,32 @@ class Command extends \Symfony\Component\Console\Command\Command {
 
 		return $process;
 	}
+
+	/**
+	 * Returns whether or not the current path has uncommitted git changes.
+	 *
+	 * @return bool
+	 */
+	protected function has_changes_in_current_path() {
+		$process = $this->run_process( 'git diff-index HEAD --' );
+
+		return (bool) $process->getOutput();
+	}
+
+	/**
+	 * Gets the paths for all recursive submodules.
+	 *
+	 * @param bool $recursive Recurse into submodules.
+	 *
+	 * @return bool
+	 */
+	protected function get_submodule_paths( $recursive = true ) {
+		if ( $recursive ) {
+			$recursive = '--recursive';
+		}
+
+		$process = $this->run_process( 'git submodule status ' . $recursive . ' | awk \'{ print $2 }\'' );
+
+		return explode( "\n", $process->getOutput() );
+	}
 }
