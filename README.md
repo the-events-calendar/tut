@@ -59,6 +59,7 @@ export PATH=/path/to/tut:$PATH
 | Command | Description |
 |--|--|
 | [`git:clone`](docs/commands/git/clone.md) | Clone a repository |
+| [`git:file`](docs/commands/git/file.md) | Fetch a file from a repository |
 
 ## Extension Subcommands
 
