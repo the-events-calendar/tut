@@ -102,9 +102,11 @@ class Command extends \Symfony\Component\Console\Command\Command {
 	}
 
 	protected function configure() {
-		$this
-			->addOption( 'dry-run', '', InputOption::VALUE_NONE, 'Whether the command should really execute or not.' )
-			->addOption( 'plugin', 'p', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'A comma separated list of plugins that will be pushed', [] );
+		if ( $this->do_plugin_selection ) {
+			$this
+				->addOption( 'dry-run', '', InputOption::VALUE_NONE, 'Whether the command should really execute or not.' )
+				->addOption( 'plugin', 'p', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'A comma separated list of plugins that will be pushed', [] );
+		}
 	}
 
 	public function get_plugin( $search ) {
@@ -153,6 +155,10 @@ class Command extends \Symfony\Component\Console\Command\Command {
 	 */
 	public function get_plugin_dir( $plugin ) {
 		if ( $this->already_in_plugin_dir ) {
+			return "{$this->origin_dir}";
+		}
+
+		if ( $plugin->name == basename( getcwd() ) ) {
 			return "{$this->origin_dir}";
 		}
 
@@ -208,7 +214,10 @@ class Command extends \Symfony\Component\Console\Command\Command {
 
 	public function maybe_select_plugins_from_option() {
 		$available_plugins = __::pluck( $this->config->plugins, 'name' );
-		$plugins           = $this->input->getOption( 'plugin' );
+
+		if ( $this->do_plugin_selection ) {
+			$plugins = $this->input->getOption( 'plugin' );
+		}
 
 		if ( empty( $plugins ) ) {
 			return;

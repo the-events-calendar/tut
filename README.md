@@ -46,6 +46,7 @@ export PATH=/path/to/tut:$PATH
 | [`get-build-number`](docs/commands/get-build-number.md) | Gets the build number based on recent commit timestamp |
 | [`get-hash`](docs/commands/get-hash.md) | Gets current repo hash |
 | [`package`](docs/commands/package.md) | Package zips for release |
+| [`release-date`](docs/commands/release-date.md) | Updates the release date in the readme.txt changelog |
 | [`reset`](docs/commands/reset.md) | Resets repo back to main/master |
 | [`sync`](docs/commands/sync.md) | Git branch synchronization |
 | [`tbd`](docs/commands/tbd.md) | TBD Locator |

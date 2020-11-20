@@ -20,6 +20,7 @@ $application->add( new Commands\GetHash );
 $application->add( new Commands\Git\GitClone );
 $application->add( new Commands\ListTemplates );
 $application->add( new Commands\Package );
+$application->add( new Commands\ReleaseDate );
 $application->add( new Commands\Reset );
 $application->add( new Commands\SubmoduleSync );
 $application->add( new Commands\Sync );
