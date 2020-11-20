@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b311b1b46b367597bbde3d60d88d7e63",
+    "content-hash": "dfae74f89c3f6670912a6deb8813abc4",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -477,16 +477,16 @@
         },
         {
             "name": "knplabs/github-api",
-            "version": "v2.14.0",
+            "version": "v2.17.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/KnpLabs/php-github-api.git",
-                "reference": "953c9b453d3258a97755ec3557d112f271176f74"
+                "reference": "26dafcddb9739c0afc16dc74ae6e0ca2f4d0fe38"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/KnpLabs/php-github-api/zipball/953c9b453d3258a97755ec3557d112f271176f74",
-                "reference": "953c9b453d3258a97755ec3557d112f271176f74",
+                "url": "https://api.github.com/repos/KnpLabs/php-github-api/zipball/26dafcddb9739c0afc16dc74ae6e0ca2f4d0fe38",
+                "reference": "26dafcddb9739c0afc16dc74ae6e0ca2f4d0fe38",
                 "shasum": ""
             },
             "require": {
@@ -504,12 +504,14 @@
                 "guzzlehttp/psr7": "^1.2",
                 "php-http/guzzle6-adapter": "^1.0 || ^2.0",
                 "php-http/mock-client": "^1.2",
+                "phpstan/phpstan": "^0.12.23",
                 "phpunit/phpunit": "^7.0 || ^8.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.14.x-dev"
+                    "dev-2.x": "2.16.x-dev",
+                    "dev-master": "3.0.x-dev"
                 }
             },
             "autoload": {
@@ -540,7 +542,13 @@
                 "gist",
                 "github"
             ],
-            "time": "2020-04-25T20:36:03+00:00"
+            "funding": [
+                {
+                    "url": "https://github.com/acrobat",
+                    "type": "github"
+                }
+            ],
+            "time": "2020-11-14T17:07:32+00:00"
         },
         {
             "name": "maciejczyzewski/bottomline",

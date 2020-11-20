@@ -15,11 +15,12 @@ class File extends Command {
 	public function configure() {
 		parent::configure();
 
-		$this->setName( 'git-file' )
-			->setDescription( 'Gets the latest commit on a branch' )
-			->setHelp( 'Gets the latest commit on a branch' )
-			->addOption( 'plugin', null, InputOption::VALUE_REQUIRED, 'The name of the plugin or repo' )
+		$this->setName( 'git:file' )
+			->setDescription( 'Fetches a file from a repository.' )
+			->setHelp( 'Fetches a file from a repository.' )
+			->addOption( 'repo', null, InputOption::VALUE_REQUIRED, 'The name of the plugin or repo' )
 			->addOption( 'path', null, InputOption::VALUE_REQUIRED, 'Path and file to get' )
+			->addOption( 'org', null, InputOption::VALUE_REQUIRED, 'Org for the repo', 'moderntribe' )
 			->addOption( 'ref', null, InputOption::VALUE_REQUIRED, 'The name of the ref (branch, commit, tag, etc)' );
 	}
 
@@ -30,13 +31,15 @@ class File extends Command {
 	 * @param OutputInterface $output
 	 */
 	protected function execute( InputInterface $input, OutputInterface $output ) {
-		$plugin = empty( $input->getOption( 'plugin' ) ) ? null : urldecode( $input->getOption( 'plugin' ) );
-		$ref    = empty( $input->getOption( 'ref' ) ) ? null : $input->getOption( 'ref' );
-		$path   = empty( $input->getOption( 'path' ) ) ? null : $input->getOption( 'path' );
+		$repo = empty( $input->getOption( 'repo' ) ) ? null : urldecode( $input->getOption( 'repo' ) );
+		$ref  = empty( $input->getOption( 'ref' ) ) ? null : $input->getOption( 'ref' );
+		$path = empty( $input->getOption( 'path' ) ) ? null : $input->getOption( 'path' );
+		$org  = empty( $input->getOption( 'org' ) ) ? null : $input->getOption( 'org' );
 
-		$github = new GitHub( 'moderntribe' );
-		$file   = $github->get_file( $plugin, $ref, $path );
+		$github_client = $this->get_github_client();
 
-		echo json_encode( $file );
+		$file = $github_client->api( 'repo' )->contents()->download( $org, $repo, $path, $ref );
+
+		echo $file;
 	}
 }

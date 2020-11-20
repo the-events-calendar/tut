@@ -8,6 +8,9 @@ define( '__TUT_DIR__', __DIR__ );
 use Symfony\Component\Console\Application;
 use TUT\Commands;
 
+$dotenv = \Dotenv\Dotenv::createImmutable( __DIR__ );
+$dotenv->load();
+
 $application = new Application();
 
 $art = <<<ART
@@ -29,7 +32,6 @@ $art = <<<ART
                             `-._.-`
 ART;
 
-
 $application->setName( "{$art}\n\nThe Events Calendar Utilities (tut)" );
 
 $application->add( new Commands\Analyze );
@@ -40,6 +42,7 @@ $application->add( new Commands\Extension\SetDependency );
 $application->add( new Commands\GenerateCSSOverride );
 $application->add( new Commands\GetBuildNumber );
 $application->add( new Commands\GetHash );
+$application->add( new Commands\Git\File );
 $application->add( new Commands\Git\GitClone );
 $application->add( new Commands\ListTemplates );
 $application->add( new Commands\Package );

@@ -2,6 +2,7 @@
 namespace TUT;
 
 use __;
+use Github;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -64,6 +65,11 @@ class Command extends \Symfony\Component\Console\Command\Command {
 	 * @var bool Holds whether or not the command began in the plugin directory already
 	 */
 	protected $already_in_plugin_dir = false;
+
+	/**
+	 * @var GitHub\Client GitHub Client object.
+	 */
+	protected $github_client;
 
 	/**
 	 * If custom local `tut.json` exists and is readable, load it. Else, load default JSON that ships with this repo.
@@ -774,5 +780,30 @@ class Command extends \Symfony\Component\Console\Command\Command {
 		$process = $this->run_process( 'git submodule status ' . $recursive . ' | awk \'{ print $2 }\'' );
 
 		return explode( "\n", $process->getOutput() );
+	}
+
+	/**
+	 * Gets a GitHub client object.
+	 *
+	 * @return Github\Client
+	 */
+	protected function get_github_client() {
+		$github_user  = getenv( 'GITHUB_USER' );
+		$github_token = getenv( 'GITHUB_OAUTH_TOKEN' );
+
+		if ( empty( $github_user ) || empty( $github_token ) ) {
+			$this->io->error( 'In order to use this command, you must have GITHUB_USER and GITHUB_OAUTH_TOKEN set in your ' . __TUT_DIR__ . '/.env file' );
+		}
+
+		if ( empty( $this->github_client ) ) {
+			$this->github_client = new GitHub\Client();
+			$this->github_client->authenticate(
+				$github_user,
+				$github_token,
+				GitHub\Client::AUTH_CLIENT_ID
+			);
+		}
+
+		return $this->github_client;
 	}
 }
