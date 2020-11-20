@@ -137,7 +137,7 @@ mtreleasedate
 
 This will walk you through interactive steps for setting version numbers.
 
-### `mtdeploy`: Packaging zips for release
+### `tut package`: Packaging zips for release
 
 This is a simple script designed to help the Modern Tribe team package WordPress premium plugins for deployment.
 
