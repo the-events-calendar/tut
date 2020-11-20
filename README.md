@@ -91,31 +91,3 @@ Using terminal, run:
 mtsvndiff
 ```
 
-## Helpful tips
-
-1. Place the path to tribe-plugin-packger in your path so you can just type `gitdeploy.sh`!
-1. Execute this from the `wp-content/plugins` directory where the various plugins this script packages are already checked out! If you do that, `npm` is assumed to have already been run and it executes more quickly.
-
-## Example usage
-
-When it comes time to prepping a release, here are the steps that _I_ go through with those scripts (all of these steps are done from the `/plugins/` directory and assumes you have the tribe-plugin-packager in your `$PATH`:
-
-### 1. Updating plugin codebase
-
-First I make sure I have the latest and greatest.
-
-`tut sync develop`
-
-### 2. Updating the version numbers in the appropriate plugins
-
-This script goes to all the relevant files and updates the version numbers to the values that you specify when prompted.  It then shows you a diff and asks if you want to commit the version changes.
-
-`tut version`
-
-### 3. Merge stuff into master and create the zip files
-
-This script optionally merges a branch into master and then does a version number sanity check before packaging a zip file (which it stores in `/tmp`)
-
-`mtdeploy`
-
-The `tut version` and `mtdeploy` scripts prompt you for the plugin(s) you want to twiddle and package.
