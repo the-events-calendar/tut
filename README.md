@@ -51,6 +51,7 @@ export PATH=/path/to/tut:$PATH
 | [`release-date`](docs/commands/release-date.md) | Updates the release date in the readme.txt changelog |
 | [`reset`](docs/commands/reset.md) | Resets repo back to main/master |
 | [`sync`](docs/commands/sync.md) | Git branch synchronization |
+| [`submodule-sync`](docs/commands/submodule-sync.md) | Synchronizes submodules between repositories |
 | [`tbd`](docs/commands/tbd.md) | TBD Locator |
 | [`version`](docs/commands/version.md) | Update version numbers |
 
