@@ -36,7 +36,7 @@ export PATH=/path/to/tut:$PATH
 
 * [Deploy workflow](docs/deploy-workflow.md)
 
-## Commands
+## Top-level Commands
 
 | Command | Description |
 |--|--|
@@ -53,3 +53,15 @@ export PATH=/path/to/tut:$PATH
 | [`sync`](docs/commands/sync.md) | Git branch synchronization |
 | [`tbd`](docs/commands/tbd.md) | TBD Locator |
 | [`version`](docs/commands/version.md) | Update version numbers |
+
+## Git Subcommands
+
+| Command | Description |
+|--|--|
+
+## Extension Subcommands
+
+| Command | Description |
+|--|--|
+| [`extension:create`](docs/commands/extension-create.md) | Create a TEC/ET extension |
+| [`extension:set-dependency`](docs/commands/extension-set-dependency.md) | Modifies or adds a dependency to an extension repo on GitHub |

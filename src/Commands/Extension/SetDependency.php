@@ -35,7 +35,7 @@ class SetDependency extends Command {
 			->addOption( 'repo', '', InputOption::VALUE_REQUIRED, 'Extension slug name of the .', null )
 			->addOption( 'dependency', '', InputOption::VALUE_REQUIRED, 'Which dependency we are adding.', null )
 			->addOption( 'ver', '', InputOption::VALUE_REQUIRED, 'To which version we are setting the dependency to.', null )
-			->addOption( 'org', '', InputOption::VALUE_REQUIRED, 'Org in which to look for the extension.', null )
+			->addOption( 'org', '', InputOption::VALUE_REQUIRED, 'Org in which to look for the extension.', 'mt-support' )
 		;
 	}
 

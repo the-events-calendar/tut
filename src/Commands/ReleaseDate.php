@@ -43,16 +43,16 @@ class ReleaseDate extends Command {
 			->setDescription( 'Set the release date for a specific version' )
 			->setHelp( 'Set the release date for a specific version' )
 			->addArgument( 'repo', InputArgument::REQUIRED, 'Repo on which to set the release date' )
-			->addOption( 'release-date', '', InputOption::VALUE_OPTIONAL, 'Release date of version' )
-			->addOption( 'release-version', '', InputOption::VALUE_OPTIONAL, 'Version you are setting the date on' )
+			->addOption( 'date', '', InputOption::VALUE_OPTIONAL, 'Release date of version' )
+			->addOption( 'ver', '', InputOption::VALUE_OPTIONAL, 'Version you are setting the date on' )
 			->addOption( 'branch', '', InputOption::VALUE_OPTIONAL, 'Branch on which to commit the release date' );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ) {
 		$this->branch       = $this->branch ?: $input->getOption( 'branch' );
 		$this->repo         = $this->repo ?: $input->getArgument( 'repo' );
-		$this->version      = $this->version ?: $input->getOption( 'release-version' );
-		$this->release_date = $this->release_date ?: $input->getOption( 'release-date' );
+		$this->version      = $this->version ?: $input->getOption( 'ver' );
+		$this->release_date = $this->release_date ?: $input->getOption( 'date' );
 
 		$repo = $this->get_plugin( $this->repo );
 
