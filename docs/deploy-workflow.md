@@ -9,4 +9,3 @@
 1. If you made commits for the version number or release date scripts, you'll want to push those changes up to GitHub via `tut sync --branch=BRANCH --direction=up`
 1. Make sure all the relevant `master` branches are nice and clean by running `tut reset`
 1. Build the zip files (which also verifies version numbers) using [the bot](https://inside.tri.be/plugins-packaging-with-the-bot/) (preferred) or using `tut package --branch=BRANCH --plugin=PLUGIN --final`
-1. Once you've pushed the packaged files to svn, run `mtsvndiff` to verify the svn repo has all of the required files and directories.
