@@ -67,18 +67,6 @@ mtreleasedate
 
 This will walk you through interactive steps for setting version numbers.
 
-### `mtpush`: Pushes plugin(s) to origin
-
-This script pushes the provided branch to the git origin.
-
-#### Usage
-
-Using terminal, run:
-
-```
-mtpush release/122
-```
-
 ### `mtviews`: Find all view changes since last tagged release
 
 This script prints out a report of all changed views since the last tagged release.
