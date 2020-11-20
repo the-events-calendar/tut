@@ -1,0 +1,29 @@
+#!/usr/bin/env php
+<?php
+
+require dirname( __FILE__ ) . '/vendor/autoload.php';
+
+define( '__TUT_DIR__', __DIR__ );
+
+use Symfony\Component\Console\Application;
+use TUT\Commands;
+
+$application = new Application();
+
+$application->add( new Commands\Analyze );
+$application->add( new Commands\Build );
+$application->add( new Commands\Extension\Create );
+$application->add( new Commands\Extension\SetDependency );
+$application->add( new Commands\GenerateCSSOverride );
+$application->add( new Commands\GetBuildNumber );
+$application->add( new Commands\GetHash );
+$application->add( new Commands\Git\GitClone );
+$application->add( new Commands\ListTemplates );
+$application->add( new Commands\Package );
+$application->add( new Commands\SubmoduleSync );
+$application->add( new Commands\Sync );
+$application->add( new Commands\TBD );
+$application->add( new Commands\Version );
+$application->add( new Commands\BranchList );
+
+$application->run();

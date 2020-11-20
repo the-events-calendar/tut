@@ -1,0 +1,17 @@
+<phpunit
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.5/phpunit.xsd"
+        backupGlobals="true"
+        backupStaticAttributes="false"
+        bootstrap="tests/_bootstrap.php"
+        colors="true">
+    <php>
+        <env name="wp_path" value="/var/www/wp"/>
+        <env name="wp_user" value="admin"/>
+    </php>
+    <testsuites>
+        <testsuite name="all">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

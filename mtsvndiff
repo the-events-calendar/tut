@@ -1,0 +1,101 @@
+#!/usr/bin/php
+<?php
+
+require __DIR__ . '/src/CLI.php';
+
+
+class Tribe_Product_Util_CLI_SvnDiff extends \TUT\CLI {
+	/**
+	 * Friendly plugin name
+	 */
+	public $friendly_script_name = 'Plugin directory diff tool';
+
+	public function __construct() {
+		if ( ! $wget = exec( 'which wget' ) ) {
+			echo "\033[31m Before you can run mtsvndiff, you need to have \033[0m\033[33mwget\033[0m\033[31m installed\033[0m\n\n";
+			die;
+		}
+
+		if ( ! $unzip = exec( 'which unzip' ) ) {
+			echo "\033[31m Before you can run mtsvndiff, you need to have \033[0m\033[33munzip\033[0m\033[31m installed\033[0m\n\n";
+			die;
+		}
+
+		foreach ( $this->available_plugins as $plugin => $info ) {
+			if (
+				'the-events-calendar' !== $plugin
+				&& 'event-tickets' !== $plugin
+				&& 'advanced-post-manager' !== $plugin
+				&& 'image-widget' !== $plugin
+				&& 'gigpress' !== $plugin
+			) {
+				unset( $this->available_plugins[ $plugin ] );
+			}
+		}
+
+		parent::__construct();
+
+		$this->process();
+	}
+
+	public function process() {
+		$version = $this->version_prompt( 'What version are you comparing?' );
+
+		$zip_dir = $this->prompt( 'In which directory can I find the packaged zip files?' );
+
+		@mkdir( 'dir-compare-zip' );
+		@mkdir( 'dir-compare-wp' );
+
+		foreach ( $this->selected_plugins as $plugin ) {
+			echo "-------------------\n";
+			echo "\033[33m{$plugin}\033[0m\n";
+
+			$filename = $plugin . '.' . $version . '.zip';
+			$local_filename = $plugin . '.' . $this->json_compatible_version( $version ) . '.zip';
+
+			$download_url = 'https://downloads.wordpress.org/plugin/' . $filename;
+
+			if ( ! file_exists( "{$zip_dir}/{$local_filename}" ) ) {
+				echo "\033[31m Whoops! Couldn't find {$zip_dir}/{$local_filename}\033[0m\n";
+				continue;
+			}
+
+			chdir( 'dir-compare-zip' );
+			exec( 'cp ' . $zip_dir . '/' . $local_filename . ' .' );
+			exec( 'unzip ' . $local_filename );
+			chdir( '../dir-compare-wp' );
+			exec( 'wget ' . $download_url );
+
+			// If $version hasn't been committed, wget won't be able to download anything
+			if ( ! file_exists( $filename ) ) {
+				echo "\033[31m CRAPBALLS! It was not possible to download {$plugin} {$version}!!\n"
+				   . "\033[36m Are you sure you committed {$version}?\033[0m\n"
+				   . " (bailing until you fix this mess)\n\n";
+
+				chdir( '../' );
+				$this->cleanup();
+				return;
+			}
+
+			exec( 'unzip ' . $filename );
+			chdir( '../' );
+
+			$results = exec( 'diff -qr dir-compare-zip/' . $plugin . ' dir-compare-wp/' . $plugin . ' | grep "Only in" | grep -v ".DS_Store"' );
+			if ( $results ) {
+				echo "\033[31m OH NO! There are files differences in {$plugin}!!\033[0m\n";
+				echo $results;
+			} else {
+				echo "\033[32m Directory structure and files appear to be a-ok for {$plugin}.\033[0m\n";
+			}
+		}
+
+		$this->cleanup();
+	}
+
+	protected function cleanup() {
+		exec( 'rm -rf dir-compare-zip' );
+		exec( 'rm -rf dir-compare-wp' );
+	}
+}
+
+new Tribe_Product_Util_CLI_SvnDiff;

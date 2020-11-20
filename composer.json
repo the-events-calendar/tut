@@ -1,0 +1,33 @@
+{
+  "name": "modern-tribe/tec-utils",
+  "description": "Scripts for packaging plugins for deployment",
+  "type": "project",
+  "require-dev": {
+    "phpunit/phpunit": "^5.5"
+  },
+  "license": "GPL-2.0+",
+  "authors": [
+    {
+      "name": "The Events Calendar",
+      "email": "matt@tri.be"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "symfony/console": "^3.1",
+    "symfony/process": "^3.1",
+    "maciejczyzewski/bottomline": "*",
+    "graze/parallel-process": "^0.8.1",
+    "symfony/stopwatch": "^4.3",
+    "graze/console-diff-renderer": "^0.6.2",
+    "knplabs/github-api": "^2.14",
+    "php-http/guzzle6-adapter": "^1.1",
+    "vlucas/phpdotenv": "^4.1",
+    "phplucidframe/console-table": "^1.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "TUT\\" : "src/"
+    }
+  }
+}

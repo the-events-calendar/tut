@@ -1,0 +1,140 @@
+#!/usr/bin/php
+<?php
+
+require __DIR__ . '/src/CLI.php';
+
+
+class Tribe_Product_Util_CLI_Docs extends \TUT\CLI {
+
+	/**
+	 * Friendly plugin name
+	 */
+	public $friendly_script_name = 'Plugin doc generator';
+
+	/**
+	 * User to generate docs as
+	 */
+	public $docs_user = 'peter';
+
+	/**
+	 * Directory where WordPress lives
+	 */
+	public $wp_dir = '/var/www/tec/wp';
+
+	/**
+	 * @var bool
+	 */
+	public $verbose = false;
+
+	/**
+	 * @var bool
+	 */
+	protected $dryrun = false;
+
+	public function __construct() {
+		$this->add_extra_plugins();
+
+		$this->supported_args['long'][] = 'wp::';
+		$this->supported_args['long'][] = 'user::';
+		$this->supported_args['long'][] = 'dry-run';
+		$this->supported_args['long'][] = 'verbose';
+
+		parent::__construct();
+
+		$this->process();
+	}
+
+	public function parse_args() {
+		parent::parse_args();
+
+		if ( ! empty( $this->args['wp'] ) ) {
+			$this->wp_dir = $this->args['wp'];
+		}
+
+		if ( ! empty( $this->args['user'] ) ) {
+			$this->docs_user = $this->args['user'];
+		}
+
+		if ( isset( $this->args['dry-run'] ) ) {
+			$this->dryrun = true;
+		}
+
+		if ( isset( $this->args['verbose'] ) ) {
+			$this->verbose = true;
+		}
+	}
+
+	public function process() {
+		if ( $this->verbose ) {
+			printf( "\nWill parse plugins: %s", implode( ', ', $this->selected_plugins ) );
+		}
+
+		if ( $this->dryrun ) {
+			printf( "\nDone nothing: running in dry-run mode" );
+
+			return 0;
+		}
+
+		foreach ( $this->selected_plugins as $plugin ) {
+			echo "-------------------\n";
+			echo "{$plugin}\n";
+
+			$plugin_dir = "{$this->origin_dir}/{$plugin}";
+
+			if ( file_exists( $plugin_dir ) ) {
+				// cd into the plugin directory
+				chdir( $plugin_dir );
+			} else {
+				shell_exec( "rm -rf /tmp/{$plugin}" );
+				chdir( '/tmp' );
+				shell_exec( "git clone --recursive git@github.com:moderntribe/{$plugin}.git" );
+				chdir( $plugin );
+			}
+
+			$current_branch = $this->get_branch();
+
+			// checkout master
+			echo shell_exec( 'git checkout master' );
+
+			$parser_dir = getcwd();
+
+			chdir( $this->origin_dir );
+
+			echo shell_exec(
+				"wp parser create {$parser_dir} --user={$this->docs_user} --allow-root --path='{$this->wp_dir}'"
+			);
+		}
+
+		echo "-------------------\n";
+		echo "DONE\n";
+	}
+
+	/**
+	 * For the purpose of doc generation these extra plugins should be taken
+	 * into account.
+	 */
+	private function add_extra_plugins() {
+		$extra_plugins = [
+			'event-tickets'            => [
+				'bootstrap' => 'event-tickets.php',
+				'main'      => 'src/Tribe/Main.php',
+				'version'   => 'const VERSION',
+			],
+			'event-tickets-plus'       => [
+				'bootstrap' => 'event-tickets-plus.php',
+				'main'      => 'src/Tribe/Main.php',
+				'version'   => 'const VERSION',
+			],
+			'events-community-tickets' => [
+				'bootstrap' => 'events-community-tickets.php',
+				'main'      => 'src/Tribe/Main.php',
+				'version'   => 'const VERSION',
+			]
+		];
+
+		$this->available_plugins = array_merge( $this->available_plugins, $extra_plugins );
+	}
+}
+
+
+new Tribe_Product_Util_CLI_Docs;

@@ -1,0 +1,252 @@
+#!/usr/bin/php
+<?php
+
+require __DIR__ . '/src/CLI.php';
+
+class Tribe_Product_Util_CLI_Deploy extends \TUT\CLI {
+	/**
+	 * Friendly plugin name
+	 */
+	public $friendly_script_name = 'Plugin release zipper';
+
+	public function __construct() {
+		parent::__construct();
+
+		$this->process();
+	}
+
+	public function process() {
+		if ( $merge_to_master = $this->confirm( 'Would you like to merge a branch into master before packaging?' ) ) {
+			$branch = $this->prompt_and_confirm(
+				'Which branch would you like to merge into master?',
+				'Are you sure you wish to merge %s into master?'
+			);
+		}
+
+		$version = $this->version_prompt( 'What version are you packaging?' );
+
+		foreach ( $this->selected_plugins as $plugin ) {
+			echo "-------------------\n";
+			echo "{$plugin}\n";
+
+			$plugin_dir = "{$this->origin_dir}/{$plugin}";
+
+			if ( ! file_exists( $plugin_dir ) ) {
+				echo shell_exec( "rm -rf /tmp/{$plugin}" );
+				chdir( '/tmp' );
+				echo shell_exec( "git clone --recursive git@github.com:moderntribe/{$plugin}.git" );
+				echo shell_exec( 'npm install' );
+				$plugin_dir = "/tmp/{$plugin}";
+			} else {
+				// cd into the plugin directory
+				chdir( $plugin_dir );
+			}
+
+			$current_branch = $this->get_branch();
+
+			if ( $merge_to_master ) {
+				echo shell_exec( "git checkout {$branch}" );
+				echo shell_exec( 'git pull' );
+				$this->update_submodules();
+			}
+
+			echo shell_exec( 'git checkout master' );
+
+			if ( $merge_to_master ) {
+				echo shell_exec( "git merge {$branch}" );
+			}
+
+			if ( 'the-events-calendar' === $plugin ) {
+				// remove the 3rd line (Plugin Name: Yadda yadda) from the bootstrap files (see: https://central.tri.be/issues/41984)
+				$file = file_get_contents( 'common/tribe-common.php' );
+				$file = preg_replace( "/Plugin Name:.*[\r\n]+/", '', $file );
+				file_put_contents( 'common/tribe-common.php', $file );
+
+				$file = file_get_contents( 'vendor/tickets/event-tickets.php' );
+				$file = preg_replace( "/Plugin Name:.*[\r\n]+/", '', $file );
+				file_put_contents( 'vendor/tickets/event-tickets.php', $file );
+
+				$file = file_get_contents( 'vendor/tickets/common/tribe-common.php' );
+				$file = preg_replace( "/Plugin Name:.*[\r\n]+/", '', $file );
+				file_put_contents( 'vendor/tickets/common/tribe-common.php', $file );
+			} elseif ( 'event-tickets' === $plugin ) {
+				// remove the 3rd line (Plugin Name: Yadda yadda) from the bootstrap files (see: https://central.tri.be/issues/41984)
+				$file = file_get_contents( 'common/tribe-common.php' );
+				$file = preg_replace( "/Plugin Name:.*[\r\n]+/", '', $file );
+				file_put_contents( 'common/tribe-common.php', $file );
+			}
+
+			$json = file_get_contents( 'package.json' );
+			preg_match( '/.*"version"\:[^"]*"([^"]*).*/', $json, $matches );
+			$json_version = trim( $matches[1] );
+			preg_match( '/.*"_zipname"\:[^"]*"([^"]*).*/', $json, $matches );
+			$zipname = trim( $matches[1] );
+
+			$readme = file_get_contents( 'readme.txt' );
+			preg_match( '/Stable tag\:\s+(.*)/', $readme, $matches );
+			$readme_version = trim( $matches[1] );
+
+			if (
+				'the-events-calendar' === $plugin
+				|| 'event-tickets' === $plugin
+			) {
+				$current_common_hash = shell_exec( 'git ls-tree HEAD common' );
+				chdir( 'common' );
+
+				$main_file = file_get_contents( $this->available_plugins[ $plugin ]['main'] );
+				$common_version_regex = '/.*' . preg_quote( $this->available_plugins[ $plugin ]['version'] ) . "[^']*'([^']*)'.*/";
+				preg_match( $common_version_regex, $main_file, $matches );
+				$current_common_version = $matches[1];
+
+				$tag_exists = shell_exec( 'git show-ref --tags | grep "refs/tags/' . $current_common_version . '"' );
+
+				chdir( '../' );
+
+				if ( ! $tag_exists ) {
+					$old_common_hash = shell_exec( 'git ls-tree ' . $current_common_version . ' common' );
+				} else {
+					$main_file = file_get_contents( $this->available_plugins[ $plugin ]['main'] );
+					$old_common_hash = $current_common_hash;
+					preg_match( $common_version_regex, $main_file, $matches );
+					$old_common_version = $matches[1];
+				}
+
+				if ( trim( $current_common_hash ) !== trim( $old_common_hash ) ) {
+					chdir( '/tmp' );
+					echo shell_exec( 'git clone --recursive git@github.com:moderntribe/tribe-common.git' );
+					chdir( 'tribe-common' );
+					echo shell_exec( 'git checkout ' . $old_common_hash );
+
+					$main_file = file_get_contents( $this->available_plugins[ $plugin ]['main'] );
+					preg_match( $common_version_regex, $main_file, $matches );
+					$old_common_version = $matches[1];
+
+					chdir( $plugin_dir );
+				}
+
+				echo "{$current_common_hash}\n";
+				echo "{$old_common_hash}\n";
+				echo "{$current_common_version}\n";
+				echo "{$old_common_version}\n";
+
+				if ( $old_common_version !== $current_common_version ) {
+					echo "******** ERROR ********\n";
+					echo "You are attempting to package version {$version} but the VERSION constant in tribe-common has not been updated.\n";
+					echo "Bailing out so you can fix it.\n";
+					echo "***********************\n";
+					exit;
+				}
+			}
+
+			$bootstrap_file = file_get_contents( $this->available_plugins[ $plugin ]['bootstrap'] );
+			$main_file = file_get_contents( $this->available_plugins[ $plugin ]['main'] );
+
+			$main_version = null;
+
+			if ( isset( $this->available_plugins[ $plugin ]['version'] ) ) {
+				preg_match( '/.*' . $this->available_plugins[ $plugin ]['version'] . "[^']*'([^']*)'.*/", $main_file, $matches );
+				$main_version = $matches[1];
+			}
+
+			preg_match( '/.*Version\:\s*([0-9a-z.-]*).*/', $bootstrap_file, $matches );
+			$bootstrap_version = $matches[1];
+
+			if ( isset( $this->available_plugins[ $plugin ]['version'] ) && $main_version !== $version ) {
+				echo "******** ERROR ********\n";
+				echo "You are attempting to package version {$version} but the VERSION constant is {$main_version} in {$this->available_plugins[ $plugin ]['main']}\n";
+				echo "Bailing out so you can fix it.\n";
+				echo "***********************\n";
+				exit;
+			}
+
+			if ( $bootstrap_version !== $version ) {
+				echo "******** ERROR ********\n";
+				echo "You are attempting to package version {$version} but the 'Version' is {$bootstrap_version} in {$this->available_plugins[ $plugin ]['bootstrap']}\n";
+				echo "Bailing out so you can fix it.\n";
+				echo "***********************\n";
+				exit;
+			}
+
+			if ( $readme_version !== $version ) {
+				echo "******** ERROR ********\n";
+				echo "You are attempting to package version {$version} but the 'Stable tag' is {$readme_version} in readme.txt\n";
+				echo "Bailing out so you can fix it.\n";
+				echo "***********************\n";
+				exit;
+			}
+
+			$json_compatible_version = $this->json_compatible_version( $version );
+			if ( $json_version !== $json_compatible_version ) {
+				echo "******** ERROR ********\n";
+				echo "You are attempting to package version {$json_compatible_version} but the 'version' is {$json_version} in package.json\n";
+				echo "Bailing out so you can fix it.\n";
+				echo "***********************\n";
+				exit;
+			}
+
+			$changed_views[ $plugin ] = $this->changed_views( $plugin );
+
+			$view_problems = '';
+			foreach ( $changed_views as $plugin => $data ) {
+				if ( ! $data ) {
+					continue;
+				}
+
+				$view_header = "\n**{$plugin}**\n";
+				$view_header .= "==========================\n";
+				$view_file_issues = array();
+				foreach ( (array) $data as $file => $info ) {
+					$version_to_check = preg_replace( '/([\d\.]+).*/', '$1', $info['bootstrap-version'] );
+
+					if ( ! $info['view-version'] ) {
+						$view_file_issues[] = "* {$file} - NO @version SET";
+					} elseif ( $info['view-version'] !== $version_to_check ) {
+						$view_file_issues[] = "* {$file} - @version MISMATCH: Plugin version: {$version_to_check} vs. View version: {$info['view-version']}";
+					}
+				}
+
+				if ( $view_file_issues ) {
+					$view_problems .= $view_header . implode( "\n", $view_file_issues );
+				}
+			}
+
+			if ( $view_problems ) {
+				echo "******** ERROR ********\n";
+				echo "You are attempting to package version {$version} but there are version mismatches in some view templates:\n";
+				echo $view_problems;
+				echo "\nBailing out so you can fix it.\n";
+				echo "***********************\n";
+				exit;
+			}
+
+			// package up the zip
+			echo shell_exec( "gulp glotpress" );
+			echo shell_exec( "gulp package --branch master --returnbranch {$current_branch}" );
+
+			// reset the files we tweaked for packaging
+			if ( 'the-events-calendar' === $plugin ) {
+				chdir( 'common' );
+				echo shell_exec( 'git checkout tribe-common.php' );
+				chdir( '../vendor/tickets' );
+				echo shell_exec( 'git checkout event-tickets.php' );
+				chdir( 'common' );
+				echo shell_exec( 'git checkout tribe-common.php' );
+				chdir( '../../..' );
+			} elseif ( 'event-tickets' === $plugin ) {
+				chdir( 'common' );
+				echo shell_exec( 'git checkout tribe-common.php' );
+			}
+
+			// go back a directory
+			chdir( $this->origin_dir );
+
+			// move the zip file to /tmp
+			echo shell_exec( 'mv "' . $zipname . '.' . $json_compatible_version . '.zip" /tmp' );
+		}//end foreach
+
+		echo "-------------------\n";
+		echo "DONE\n";
+	}
+}
+
+new Tribe_Product_Util_CLI_Deploy;

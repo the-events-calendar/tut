@@ -1,0 +1,53 @@
+#!/usr/bin/php
+<?php
+
+require __DIR__ . '/src/CLI.php';
+
+class Tribe_Product_Util_CLI_Master extends \TUT\CLI {
+	/**
+	 * Friendly plugin name
+	 */
+	public $friendly_script_name = 'Plugin master resetter';
+
+	/**
+	 * Branch to update
+	 */
+	public $branch;
+
+	public function __construct() {
+		parent::__construct();
+
+		$this->process();
+	}
+
+	public function process() {
+		foreach ( $this->selected_plugins as $plugin ) {
+			echo "-------------------\n";
+
+			$plugin_dir = "{$this->origin_dir}/{$plugin}";
+
+			if ( file_exists( $plugin_dir ) ) {
+				echo "{$plugin}\n";
+
+				// cd into the plugin directory
+				chdir( $plugin_dir );
+
+				echo shell_exec( 'git checkout master' );
+				echo shell_exec( 'git reset --hard @{u}' );
+				echo shell_exec( 'git pull' );
+
+				$this->update_submodules();
+
+				// go back up to the plugins directory
+				chdir( '../' );
+			} else {
+				echo "{$plugin} doesn't exist in this directory. Perhaps you aren't in executing this from plugins?\n";
+			}
+		}
+
+		echo "-------------------\n";
+		echo "DONE\n";
+	}
+}
+
+new Tribe_Product_Util_CLI_Master;
