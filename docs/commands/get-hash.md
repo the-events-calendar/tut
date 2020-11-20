@@ -4,7 +4,7 @@
 
 Grabs the current short hash of whatever repo you are currently in.
 
-## Examples
+## Usage
 
 ```bash
 tut get-hash

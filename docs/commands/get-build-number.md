@@ -4,7 +4,7 @@
 
 Grabs the build number based on the timestamp of the most recent commit.
 
-## Examples
+## Usage
 
 ```bash
 tut get-build-number

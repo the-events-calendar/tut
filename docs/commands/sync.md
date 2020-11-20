@@ -4,7 +4,7 @@
 
 If you wish to globally check out a specific branch across all of the Tribe plugins in a directory.
 
-## Examples
+## Usage
 
 ```sh
 # Pulls Current Release

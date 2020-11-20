@@ -4,7 +4,7 @@
 
 When updating version numbers in one or more plugins, this script simplifies the task by asking a few questions and executing the needed file updates.
 
-## Example
+## Usage
 
 ```sh
 tut version

@@ -78,18 +78,6 @@ Using terminal, run:
 mtmaster
 ```
 
-### `mtdocs`: Generate code docs for tec.com
-
-This script leverages wp parser to generate docs for the tec.com database
-
-#### Usage
-
-Using terminal, run:
-
-```
-mtdocs
-```
-
 ### `mtpush`: Pushes plugin(s) to origin
 
 This script pushes the provided branch to the git origin.

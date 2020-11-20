@@ -4,7 +4,7 @@
 
 On the end of the release the Developer responsible for the release will run this command to add the automated changelog entries for our users.
 
-## Example
+## Usage
 
 ```
 $ tut analyze
