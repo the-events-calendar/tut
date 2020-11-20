@@ -1,4 +1,7 @@
 <?php
+/**
+ * This class is named GitClone because Clone is a reserved word.
+ */
 
 namespace TUT\Commands\Git;
 
