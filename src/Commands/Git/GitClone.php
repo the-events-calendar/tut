@@ -8,8 +8,29 @@ namespace TUT\Commands\Git;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use TUT\Command;
 
-class GitClone extends GitAbstract {
+class GitClone extends Command {
+	/**
+	 * @var InputInterface
+	 */
+	public $input;
+
+	/**
+	 * @var OutputInterface
+	 */
+	public $output;
+
+	/**
+	 * @var string
+	 */
+	protected $org;
+
+	/**
+	 * @var string
+	 */
+	protected $repo;
+
 	/**
 	 * @var string Path
 	 */
@@ -131,4 +152,26 @@ class GitClone extends GitAbstract {
 	private function cleanup_clone( string $path ) {
 		$this->run_process( 'rm -rf ' . escapeshellarg( $path ) );
 	}
+
+		/**
+		 * Gets the base temp dir where clones will happen
+		 *
+		 * @return string
+		 */
+		protected function get_base_temp_dir() : string {
+			return sys_get_temp_dir() . "/{$this->repo}";
+		}
+
+		/**
+		 * Parses a repo string into an org/repo pair
+		 *
+		 * @return array
+		 */
+		protected function parse_repo_string() : array {
+			if ( false !== strpos( $this->repo, '/' ) ) {
+				return explode( '/', $this->repo );
+			}
+
+			return [ $this->default_org, $this->repo ];
+		}
 }
