@@ -45,82 +45,20 @@ export PATH=/path/to/tut:$PATH
 1. Build the zip files (which also verifies version numbers) using [the bot](https://inside.tri.be/plugins-packaging-with-the-bot/) (preferred) or using `tut package --branch "branchname" --plugin "event-tickets" --final`
 1. Once you've pushed the packaged files to svn, run `mtsvndiff` to verify the svn repo has all of the required files and directories.
 
-## Scripts
+## Commands
 
-### `tut analyze`: Changelog entries for Hooks and Template changes
-
-On the end of the release the Developer responsible for the release will run this command to add the automated changelog entries for our users.
-
-```
-$ tut analyze
-
-event-tickets
--------------
-
- * Tweak - Changed views: `blocks/rsvp`, `blocks/rsvp/content-inactive`, `blocks/rsvp/content`, `blocks/rsvp/form`, `blocks/rsvp/form/form`, `blocks/rsvp/form/submit-login`, `blocks/rsvp/form/submit`, `blocks/rsvp/status`, `blocks/rsvp/status/going-icon`, `blocks/rsvp/status/going`, `blocks/rsvp/status/not-going`, `blocks/tickets`, `blocks/tickets/content-inactive`, `blocks/tickets/content`, `blocks/tickets/item-inactive`, `blocks/tickets/item`, `registration/button-checkout`
-```
-
-### `tut build`: Mass composer/npm/gulp building
-
-Goes into each plugin and runs composer, npm, and webpack where applicable. You can execute this from within the root of a plugin or from the `plugins/` directory.
-
-**Examples**
-```bash
-tut build
-```
-
-### `tut generate-css-override`: Finds CSS rules for the purposes of providing overrides.
-
-Looks through CSS files to find rules that contain the provided search value and generates an override rule with the provided replace value.
-
-**Example**
-
-```bash
-tut generate-css-override --search='"Helvetica Neue", Helvetica, -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif' --replace="font-family: inherit;"
-```
-
-### `tut get-build-number`: Gets the build number based on recent commit timestamp
-
-Grabs the build number based on the timestamp of the most recent commit.
-
-**Examples**
-```bash
-tut get-build-number
-```
-
-### `tut get-hash`: Gets current repo hash
-
-Grabs the current short hash of whatever repo you are currently in.
-
-**Examples**
-```bash
-tut get-hash
-```
-
-### `tut sync`: Mass Git Syncing
-
-If you wish to globally check out a specific branch across all of the
-Tribe plugins in a directory.
-
-**Examples**
-```sh
-# Pulls Current Release
-tut sync master
-
-# Pulls Maintenance Release
-tut sync release/B20.01
-
-tut sync release/B20.01 -p tec,pro
-
-tut sync release/B20.01 --plugin tec --plugin pro
-
-// Pushes Current Release
-tut sync release/B20.01 -d up
-```
-
-### `tut version`: Updating version numbers
-
-When updating version numbers in one or more plugins, this script simplifies the task by asking a few questions and executing the needed file updates.
+| Command | Description |
+|--|--|
+| [`analyze`](docs/commands/analyze.md) | Changelog entries for Hooks and Template changes |
+| [`build`](docs/commands/build.md) | Mass composer/npm/gulp building |
+| [`generate-css-override`](docs/commands/generate-css-override.md) | Finds CSS rules for the purposes of providing overrides. |
+| [`get-build-number`](docs/commands/get-build-number.md) | Gets the build number based on recent commit timestamp |
+| [`get-hash`](docs/commands/get-hash.md) | Gets current repo hash |
+| [`package`](docs/commands/package.md) | Package zips for release |
+| [`sync`](docs/commands/sync.md) | Git branch synchronization |
+| [`tbd`](docs/commands/tbd.md) | TBD Locator |
+| [`template-list`](docs/commands/template-list.md) | List templates in plugin |
+| [`version`](docs/commands/version.md) | Update version numbers |
 
 
 ### `mtreleasedate`: Update the release date in the changelog
@@ -136,45 +74,6 @@ mtreleasedate
 ```
 
 This will walk you through interactive steps for setting version numbers.
-
-### `tut package`: Packaging zips for release
-
-This is a simple script designed to help the Modern Tribe team package WordPress premium plugins for deployment.
-
-#### Usage
-
-Using terminal, run:
-
-```
-tut package
-```
-
-Packages zip files for release.
-
-```
-Usage:
-  package [options]
-
-Options:
-      --dry-run               Whether the command should really execute or not.
-  -p, --plugin=PLUGIN         A comma separated list of plugins that will be pushed (multiple values allowed)
-  -b, --branch=BRANCH         Branch to be packaged (must exist on GitHub.com)
-      --final                 Package the zip without a hash in the filename
-      --ignore-view-versions  Ignore problems that arise from view version updates
-  -m, --merge[=MERGE]         Branch to merge into the branch being packaged
-  -o, --output[=OUTPUT]       Directory to dump the zip files (defaults to current directory)
-  -r, --release[=RELEASE]     Version to package
-  -h, --help                  Display this help message
-  -q, --quiet                 Do not output any message
-  -V, --version               Display this application version
-      --ansi                  Force ANSI output
-      --no-ansi               Disable ANSI output
-  -n, --no-interaction        Do not ask any interactive question
-  -v|vv|vvv, --verbose        Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
-      --clear                 Remove any untracked file from the current branch of the plugin
-```
-
-_Note:_ zip files for packaged plugins will be placed in /tmp unless manually overridden via `--output=`
 
 ### `mtmaster`: Reset master back to latest upstream
 
@@ -210,30 +109,6 @@ Using terminal, run:
 
 ```
 mtpush release/122
-```
-
-### `tut tbd`: TBD locator
-
-This scripts informs you of all the places you need to update TBD references.
-
-#### Usage
-
-Using terminal, run:
-
-```
-tut tbd
-```
-
-### `tut template-list`: List of templates
-
-This scripts informs you of all the templates and their short descriptions so you can use them for KB purposes.
-
-#### Usage
-
-Using terminal, run:
-
-```
-tut template-list
 ```
 
 ### `mtviews`: Find all view changes since last tagged release
