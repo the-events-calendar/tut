@@ -108,6 +108,8 @@ class Command extends \Symfony\Component\Console\Command\Command {
 	}
 
 	protected function configure() {
+		$this->maybe_prompt_for_repo_update();
+
 		if ( $this->do_plugin_selection ) {
 			$this
 				->addOption( 'dry-run', '', InputOption::VALUE_NONE, 'Whether the command should really execute or not.' )
@@ -803,5 +805,53 @@ class Command extends \Symfony\Component\Console\Command\Command {
 		}
 
 		return $this->github_client;
+	}
+
+	/**
+	 * If tric itself is out of date, prompt to update repo.
+	 */
+	protected function maybe_prompt_for_repo_update() {
+		$remote_version = null;
+		$check_date     = null;
+		$cli_version    = TUT_VERSION;
+		$today          = date( 'Y-m-d' );
+
+		if ( file_exists( __TUT_DIR__ . '/.remote-version' ) ) {
+			list( $check_date, $remote_version ) = explode( ':', file_get_contents( __TUT_DIR__ . '/.remote-version' ) );
+		}
+
+		if ( empty( $remote_version ) || empty( $check_date ) || $today > $check_date ) {
+			$current_dir = getcwd();
+			chdir( __TUT_DIR__ );
+
+			$tags = explode( "\n", shell_exec( 'git ls-remote --tags origin' ) );
+
+			chdir( $current_dir );
+
+			foreach ( $tags as &$tag ) {
+				$tag_parts = explode( '/', $tag );
+				$tag       = array_pop( $tag_parts );
+			}
+
+			natsort( $tags );
+
+			$remote_version = array_pop( $tags );
+
+			file_put_contents( __TUT_DIR__ . '/.remote-version', "{$today}:{$remote_version}" );
+		}
+
+		// If the version of the CLI is the same as the most recently built version, bail.
+		if ( version_compare( $remote_version, $cli_version, '<=' ) ) {
+			return;
+		}
+
+		$this->io->writeln( "<fg=magenta>****************************************************************</>" );
+		$this->io->newLine();
+		$this->io->writeln( "<fg=magenta>Version</> <fg=yellow>{$remote_version}</> <fg=magenta>of tut is available! You are currently</>" );
+		$this->io->writeln( "<fg=magenta>running version {$cli_version}. To update, execute the following:</>" );
+		$this->io->newLine();
+		$this->io->writeln( "<fg=yellow>                         tut upgrade</>" );
+		$this->io->newLine();
+		$this->io->writeln( "<fg=magenta>****************************************************************</>" );
 	}
 }

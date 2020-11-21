@@ -4,6 +4,7 @@
 require dirname( __FILE__ ) . '/vendor/autoload.php';
 
 define( '__TUT_DIR__', __DIR__ );
+define( 'TUT_VERSION', '1.1.0' );
 
 use Symfony\Component\Console\Application;
 use TUT\Commands;
@@ -35,6 +36,7 @@ ART;
 $application->setName( "{$art}\n\nThe Events Calendar Utilities (tut)" );
 
 $application->add( new Commands\Analyze );
+$application->add( new Commands\BranchList );
 $application->add( new Commands\Build );
 $application->add( new Commands\ChangedViews );
 $application->add( new Commands\Extension\Create );
@@ -52,6 +54,6 @@ $application->add( new Commands\SubmoduleSync );
 $application->add( new Commands\Sync );
 $application->add( new Commands\TBD );
 $application->add( new Commands\Version );
-$application->add( new Commands\BranchList );
+$application->add( new Commands\Upgrade );
 
 $application->run();

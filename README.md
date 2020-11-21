@@ -53,6 +53,7 @@ export PATH=/path/to/tut:$PATH
 | [`sync`](docs/commands/sync.md) | Git branch synchronization |
 | [`submodule-sync`](docs/commands/submodule-sync.md) | Synchronizes submodules between repositories |
 | [`tbd`](docs/commands/tbd.md) | TBD Locator |
+| [`upgrade`](docs/commands/upgrade.md) | Upgrades `tut`! |
 | [`version`](docs/commands/version.md) | Update version numbers |
 
 ## Git Subcommands
