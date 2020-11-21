@@ -82,6 +82,7 @@ class SubmoduleSync extends Command {
 			$this->io->write( '<fg=cyan>checking branches on</> <fg=yellow>' . $plugin->name . '</><fg=cyan>:</>' );
 
 			$updated_hash = false;
+			$did_compare_hashes = false;
 
 			$this->prep_branches( $plugin->name );
 
@@ -99,7 +100,7 @@ class SubmoduleSync extends Command {
 				$submodule_branches[ $submodule->name ] = array_intersect( $branches_for_submodule, $branches_for_plugin );
 
 				foreach ( $submodule_branches[ $submodule->name ] as $branch ) {
-					if ( 'master' === $branch ) {
+					if ( 'master' === $branch || 'main' === $branch ) {
 						continue;
 					}
 
@@ -116,17 +117,22 @@ class SubmoduleSync extends Command {
 					}
 
 					$plugin_submodule_hash = $plugin_submodule_hash['sha'];
+					if ( ! $did_compare_hashes ) {
+						$this->io->newLine();
+						$did_compare_hashes = true;
+					}
 
 					if ( $plugin_submodule_hash != $upstream_submodule_hash ) {
-						$this->io->newLine();
 						$this->io->writeln( "  <fg=red>x</> Hash mismatch on {$branch} (committed: {$plugin_submodule_hash}, should be: {$upstream_submodule_hash} )!" );
 						$this->update_hash( $plugin, $branch, $submodule, $output );
 						$updated_hash = true;
+					} else {
+						$this->io->writeln( "  <fg=green>✓</> {$submodule->name} hashes match for {$branch}" );
 					}
 				}
 			}
 
-			if ( ! $updated_hash ) {
+			if ( ! $did_compare_hashes ) {
 				$this->io->write( " <fg=green>✓</>\n" );
 			}
 
