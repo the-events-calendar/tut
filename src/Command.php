@@ -98,6 +98,8 @@ class Command extends \Symfony\Component\Console\Command\Command {
 		// Convert to json
 		$this->config = (object) json_decode( $this->config, true );
 
+		$this->maybe_prompt_for_repo_update();
+
 		$this->maybe_select_plugins_from_option();
 	}
 
@@ -108,8 +110,6 @@ class Command extends \Symfony\Component\Console\Command\Command {
 	}
 
 	protected function configure() {
-		$this->maybe_prompt_for_repo_update();
-
 		if ( $this->do_plugin_selection ) {
 			$this
 				->addOption( 'dry-run', '', InputOption::VALUE_NONE, 'Whether the command should really execute or not.' )
@@ -853,5 +853,7 @@ class Command extends \Symfony\Component\Console\Command\Command {
 		$this->io->writeln( "<fg=yellow>                         tut upgrade</>" );
 		$this->io->newLine();
 		$this->io->writeln( "<fg=magenta>****************************************************************</>" );
+		$this->io->newLine();
+		$this->io->newLine();
 	}
 }
