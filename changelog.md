@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.2.2] - 2020-11-21
 ### Updated
 
-- Added support for passing an alternate tmp dir when cloning for submodule-sync.
+- Updated the submodule-sync command to use API calls for updating submodule hashes.
 
 ## [1.2.1] - 2020-11-21
 ### Updated

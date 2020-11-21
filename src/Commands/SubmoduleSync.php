@@ -15,11 +15,6 @@ class SubmoduleSync extends Command {
 	public $do_plugin_selection = false;
 
 	/**
-	 * @var string Tmp dir.
-	 */
-	private $tmp_dir;
-
-	/**
 	 * @var string Branch to synchronize.
 	 */
 	protected $branch;
@@ -41,8 +36,7 @@ class SubmoduleSync extends Command {
 			->setName( 'submodule-sync' )
 			->setDescription( 'Synchronize submodules by branch' )
 			->setHelp( 'This command ensures submodules for feature/release buckets are in sync' )
-			->addOption( 'branch', '', InputOption::VALUE_REQUIRED, 'Limit synchronization to a specific branch' )
-			->addOption( 'tmp-dir', '', InputOption::VALUE_REQUIRED, 'Temporary directory to clone repositories to', sys_get_temp_dir() );
+			->addOption( 'branch', '', InputOption::VALUE_REQUIRED, 'Limit synchronization to a specific branch' );
 	}
 
 	/**
@@ -52,13 +46,6 @@ class SubmoduleSync extends Command {
 		$this->get_github_client();
 
 		$this->branch  = $this->branch ?: $input->getOption( 'branch' );
-		$this->tmp_dir = $this->tmp_dir ?: $input->getOption( 'tmp-dir' );
-
-		$this->tmp_dir .= '/' . uniqid( '', true );
-
-		if ( ! file_exists( $this->tmp_dir ) ) {
-			mkdir( $this->tmp_dir );
-		}
 
 		// prep submodules and analyze them
 		foreach ( $this->config->submodules as $submodule ) {
@@ -125,7 +112,7 @@ class SubmoduleSync extends Command {
 
 					if ( $plugin_submodule_hash != $upstream_submodule_hash ) {
 						$this->io->writeln( "  <fg=red>x</> Hash mismatch on {$branch} (committed: {$plugin_submodule_hash}, should be: {$upstream_submodule_hash} )!" );
-						$this->update_hash( $plugin, $branch, $submodule, $output );
+						$this->update_hash( $plugin, $branch, $submodule, $this->branches[ $plugin->name ][ $branch ], $upstream_submodule_hash );
 						$updated_hash = true;
 					} else {
 						$this->io->writeln( "  <fg=green>✓</> {$submodule->name} hashes match for {$branch}" );
@@ -142,49 +129,68 @@ class SubmoduleSync extends Command {
 				$this->prep_branches( $plugin->name );
 			}
 		}
-
-		if ( $this->tmp_dir != '/' ) {
-			$this->run_process( "rm -rf {$this->tmp_dir}" );
-		}
 	}
 
-	protected function update_hash( $plugin, $branch, $submodule, $output ) {
-		$upstream_submodule_hash = $this->branches[ $submodule->name ][ $branch ];
+	/**
+	 * Updates the hash of the given submodule on the given branch.
+	 *
+	 * @param stdClass $repo Repository (plugin) object from tut.json.
+	 * @param string $branch Branch on which to make the hash update.
+	 * @param stdClass $submodule Submodule to update.
+	 * @param string $branch_hash Current hash of the branch.
+	 * @param string $new_hash Submodule hash the branch should be updated to.
+	 *
+	 * @throws \Github\Exception\MissingArgumentException
+	 */
+	protected function update_hash( $repo, $branch, $submodule, $branch_hash, $new_hash ) {
+		$client = $this->get_github_client();
 
-		$command = $this->getApplication()->find( 'git:clone' );
-		$arguments = [
-			'--repo'          => "{$this->org}/{$plugin->name}",
-			'--path'          => $this->tmp_dir,
-			'--alias'         => $plugin->name,
-			'--shallow-clone' => true,
-			'--single-branch' => true,
-			'--ref'           => $branch,
+		$this->io->writeln( "<fg=cyan>Committing {$submodule->name} {$branch}@{$new_hash} to {$repo->name} {$branch}</>" );
+
+		$tree_data = [
+			'base_tree' => $branch_hash,
+			'tree' => [
+				[
+					'path' => $submodule->path,
+					'mode' => '160000', // Submodule commit.
+					'type' => 'commit',
+					'sha'  => $new_hash,
+				],
+			],
 		];
 
-		$clone_input = new ArrayInput( $arguments );
-		if ( 0 !== $command->run( $clone_input, $output ) ) {
-			$this->io->error( "Could not clone {$plugin->name}!" );
+		$tree = $client->api( 'gitData' )->trees()->create( $this->org, $repo->name, $tree_data );
+
+		if ( empty( $tree['sha'] ) ) {
+			$this->io->error( 'Could not create a submodule commit tree' );
 			exit( 1 );
 		}
 
-		$current_dir = getcwd();
+		$commit_data = [
+			'message' => ":fast_forward: https://github.com/{$this->org}/{$submodule->name}/commit/{$new_hash}",
+			'tree'    => $tree['sha'],
+			'parents' => [
+				$branch_hash,
+			],
+		];
 
-		chdir( "{$this->tmp_dir}/{$plugin->name}" );
+		$commit = $client->api( 'gitData' )->commits()->create( $this->org, $repo->name, $commit_data );
 
-		$this->run_process( 'git submodule update --init --recursive' );
+		if ( empty( $commit['sha'] ) ) {
+			$this->io->error( 'Could not create a submodule commit' );
+			exit( 1 );
+		}
 
-		chdir( $submodule->path );
+		$reference_data = [
+			'sha' => $commit['sha'],
+		];
 
-		$this->run_process( 'git fetch' );
-		$process = $this->run_process( 'git checkout ' . $upstream_submodule_hash );
+		$reference = $client->api( 'gitData' )->references()->update( $this->org, $repo->name, "heads/{$branch}", $reference_data );
 
-		chdir( "{$this->tmp_dir}/{$plugin->name}" );
-
-		$this->io->writeln( "<fg=cyan>Committing {$submodule->name} {$branch}@{$upstream_submodule_hash} to {$plugin->name} {$branch}</>" );
-		$this->run_process( 'git commit ' . $submodule->path . ' -m ":fast_forward: https://github.com/moderntribe/' . $plugin->name . '/commit/' . $upstream_submodule_hash . '"' );
-		$this->run_process( 'git push origin HEAD' );
-
-		chdir( $current_dir );
+		if ( empty( $reference['object']['sha'] ) ) {
+			$this->io->error( "Could not update {$branch} with the latest submodule commit" );
+			exit( 1 );
+		}
 	}
 
 	/**
