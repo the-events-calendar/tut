@@ -2,6 +2,7 @@
 namespace TUT\Commands;
 
 use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Input\InputOption;
 use TUT\Command as Command;
 
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,12 +15,17 @@ class SubmoduleSync extends Command {
 	public $do_plugin_selection = false;
 
 	/**
-	 * @var string Tmp dir
+	 * @var string Tmp dir.
 	 */
 	private $tmp_dir;
 
 	/**
-	 * @var array Branches in our various repos
+	 * @var string Branch to synchronize.
+	 */
+	protected $branch;
+
+	/**
+	 * @var array Branches in our various repos.
 	 */
 	protected $branches = [];
 
@@ -34,7 +40,8 @@ class SubmoduleSync extends Command {
 		$this
 			->setName( 'submodule-sync' )
 			->setDescription( 'Synchronize submodules by branch' )
-			->setHelp( 'This command ensures submodules for feature/release buckets are in sync' );
+			->setHelp( 'This command ensures submodules for feature/release buckets are in sync' )
+			->addOption( 'branch', '', InputOption::VALUE_REQUIRED, 'Limit synchronization to a specific branch' );
 	}
 
 	/**
@@ -42,6 +49,8 @@ class SubmoduleSync extends Command {
 	 */
 	protected function execute( InputInterface $input, OutputInterface $output ) {
 		$this->get_github_client();
+
+		$this->branch = $this->branch ?: $input->getOption( 'branch' );
 
 		$this->tmp_dir = sys_get_temp_dir();
 		$this->tmp_dir .= '/' . uniqid( '', true );
@@ -58,6 +67,9 @@ class SubmoduleSync extends Command {
 			if ( 'tribe-common' === $submodule->name ) {
 				continue;
 			}
+
+			$this->io->write( '<fg=cyan>checking branches on</> <fg=yellow>' . $submodule->name . '</><fg=cyan>:</>' );
+			$this->io->write( " <fg=green>✓</>\n" );
 
 			$this->prep_branches( $submodule->name );
 		}
@@ -175,9 +187,22 @@ class SubmoduleSync extends Command {
 		$client = $this->get_github_client();
 		$branches = $client->api( 'repo' )->branches( $this->org, $repo );
 
+		if ( empty( $this->branches[ $repo ] ) ) {
+			$this->branches[ $repo ] = [];
+		}
+
 		$branches = array_filter( $branches, static function( $v, $k ) {
 			return ! preg_match( '/^dependabot/', $v['name'] );
 		}, ARRAY_FILTER_USE_BOTH );
+
+		// If a specific branch was specified, only allow synchronization on that branch.
+		if ( $this->branch ) {
+			$allowed_branch = $this->branch;
+
+			$branches = array_filter( $branches, static function( $v, $k ) use ( $allowed_branch ) {
+				return $allowed_branch === $v['name'];
+			}, ARRAY_FILTER_USE_BOTH );
+		}
 
 		foreach ( $branches as $branch ) {
 			$this->branches[ $repo ][ $branch['name'] ] = $branch['commit']['sha'];
