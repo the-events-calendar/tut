@@ -41,7 +41,8 @@ class SubmoduleSync extends Command {
 			->setName( 'submodule-sync' )
 			->setDescription( 'Synchronize submodules by branch' )
 			->setHelp( 'This command ensures submodules for feature/release buckets are in sync' )
-			->addOption( 'branch', '', InputOption::VALUE_REQUIRED, 'Limit synchronization to a specific branch' );
+			->addOption( 'branch', '', InputOption::VALUE_REQUIRED, 'Limit synchronization to a specific branch' )
+			->addOption( 'tmp-dir', '', InputOption::VALUE_REQUIRED, 'Temporary directory to clone repositories to', sys_get_temp_dir() );
 	}
 
 	/**
@@ -50,9 +51,9 @@ class SubmoduleSync extends Command {
 	protected function execute( InputInterface $input, OutputInterface $output ) {
 		$this->get_github_client();
 
-		$this->branch = $this->branch ?: $input->getOption( 'branch' );
+		$this->branch  = $this->branch ?: $input->getOption( 'branch' );
+		$this->tmp_dir = $this->tmp_dir ?: $input->getOption( 'tmp-dir' );
 
-		$this->tmp_dir = sys_get_temp_dir();
 		$this->tmp_dir .= '/' . uniqid( '', true );
 
 		if ( ! file_exists( $this->tmp_dir ) ) {
