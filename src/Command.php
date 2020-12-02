@@ -523,7 +523,7 @@ class Command extends \Symfony\Component\Console\Command\Command {
 		}
 
 		$tag_hash = $this->get_revision_hash( $this->last_tag() );
-		$process  = $this->run_process( 'git diff --name-only ' . $tag_hash . ' HEAD|grep "src/views/"' );
+		$process  = $this->run_process( 'git diff --name-only --diff-filtered=d ' . $tag_hash . ' HEAD|grep "src/views/"' );
 		$views    = trim( $process->getOutput() );
 
 		if ( $views ) {
