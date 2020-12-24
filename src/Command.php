@@ -262,7 +262,7 @@ class Command extends \Symfony\Component\Console\Command\Command {
 		}
 
 		$config = file_get_contents( '.git/config' );
-		if ( ! preg_match( '!git@github.com:moderntribe/(.*)\.git!', $config, $matches ) ) {
+		if ( ! preg_match( '!git@github.com:the-events-calendar/(.*)\.git!', $config, $matches ) ) {
 			return false;
 		}
 

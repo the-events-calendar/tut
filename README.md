@@ -23,7 +23,7 @@
 
 ## Installation
 
-1. Clone the repository `git clone git@github.com:moderntribe/tut.git`
+1. Clone the repository `git clone git@github.com:the-events-calendar/tut.git`
 1. Go to the new directory `cd tut`.
 1. Run `composer install`
 1. Add the cloned repo into your PATH (edit your `.bashrc` / `.bash_profile` / `.zshrc` or whatever)

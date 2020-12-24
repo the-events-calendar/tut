@@ -44,16 +44,6 @@ class Sync extends Command {
 
 		$branches = [];
 
-		if ( 'mr' === $this->branch ) {
-			$doc = file_get_contents( 'http://inside.tri.be/maintenance-releases/?heckyeah=howweroll' );
-
-			// Fetch all the Given branches
-			preg_match_all( '!"https://github.com/moderntribe/([^/]+)/tree/([^"]+)"!', $doc, $matches );
-			foreach ( $matches[1] as $i => $plugin ) {
-				$branches[ $plugin ] = $matches[2][ $i ];
-			}
-		}
-
 		foreach ( $this->selected_plugins as $plugin ) {
 			$this->io->title( $plugin->name );
 
