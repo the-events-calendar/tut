@@ -302,7 +302,7 @@ class Package extends Command {
 
 				if ( $current_common_hash !== $old_common_hash ) {
 					chdir( $this->tmp_dir );
-					$this->run_process( 'git clone --recursive git@github.com:moderntribe/tribe-common.git' );
+					$this->run_process( 'git clone --recursive git@github.com:the-events-calendar/tribe-common.git' );
 
 					chdir( 'tribe-common' );
 					$this->run_process( "git checkout {$old_common_hash}" );

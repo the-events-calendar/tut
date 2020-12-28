@@ -5,7 +5,7 @@
 ## Usage
 
 ```
-tut git:file --repo=the-events-calendar --org=moderntribe --path=readme.txt --ref=master
+tut git:file --repo=the-events-calendar --org=the-events-calendar --path=readme.txt --ref=master
 ```
 
 ## Args
@@ -17,7 +17,7 @@ Usage:
 Options:
       --repo=REPO       The name of the plugin or repo
       --path=PATH       Path and file to get
-      --org=ORG         Org for the repo [default: "moderntribe"]
+      --org=ORG         Org for the repo [default: "the-events-calendar"]
       --ref=REF         The name of the ref (branch, commit, tag, etc)
   -h, --help            Display this help message
 

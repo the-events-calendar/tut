@@ -2,7 +2,7 @@
 
 **Package zips for release**
 
-This is a simple script designed to help the Modern Tribe team package WordPress premium plugins for deployment.
+This is a simple script designed to help the TEC team package WordPress premium plugins for deployment.
 
 ## Usage
 

@@ -48,7 +48,7 @@ class Sync extends Command {
 			$doc = file_get_contents( 'http://inside.tri.be/maintenance-releases/?heckyeah=howweroll' );
 
 			// Fetch all the Given branches
-			preg_match_all( '!"https://github.com/moderntribe/([^/]+)/tree/([^"]+)"!', $doc, $matches );
+			preg_match_all( '!"https://github.com/the-events-calendar/([^/]+)/tree/([^"]+)"!', $doc, $matches );
 			foreach ( $matches[1] as $i => $plugin ) {
 				$branches[ $plugin ] = $matches[2][ $i ];
 			}

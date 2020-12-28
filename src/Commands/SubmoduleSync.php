@@ -27,7 +27,7 @@ class SubmoduleSync extends Command {
 	/**
 	 * @var string GitHub org.
 	 */
-	protected $org = 'moderntribe';
+	protected $org = 'the-events-calendar';
 
 	protected function configure() {
 		parent::configure();

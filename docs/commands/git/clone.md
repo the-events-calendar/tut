@@ -6,25 +6,25 @@
 
 ```
 # Clone repo.
-tut git:clone --repo=moderntribe/event-tickets
+tut git:clone --repo=the-events-calendar/event-tickets
 
 # Clone repo but rename the cloned directory to "bacon/".
-tut git:clone --repo=moderntribe/event-tickets --alias=bacon
+tut git:clone --repo=the-events-calendar/event-tickets --alias=bacon
 
 # Clone repo in a specific parent directory.
-tut git:clone --repo=moderntribe/event-tickets --path=/path/to/clone/to
+tut git:clone --repo=the-events-calendar/event-tickets --path=/path/to/clone/to
 
 # Clone repo shallowly with only one commit.
-tut git:clone --repo=moderntribe/event-tickets --shallow-clone
+tut git:clone --repo=the-events-calendar/event-tickets --shallow-clone
 
 # Clone repo, but only pull one branch
-tut git:clone --repo=moderntribe/event-tickets --single-branch
+tut git:clone --repo=the-events-calendar/event-tickets --single-branch
 
 # Maybe clone repo and prune branches that don't exist upstream.
-tut git:clone --repo=moderntribe/event-tickets --prune
+tut git:clone --repo=the-events-calendar/event-tickets --prune
 
 # Clone repo and checkout a specific ref (branch, commit, tag, etc).
-tut git:clone --repo=moderntribe/event-tickets --ref=REF
+tut git:clone --repo=the-events-calendar/event-tickets --ref=REF
 ```
 
 ## Args

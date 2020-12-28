@@ -20,7 +20,7 @@ class File extends Command {
 			->setHelp( 'Fetches a file from a repository.' )
 			->addOption( 'repo', null, InputOption::VALUE_REQUIRED, 'The name of the plugin or repo' )
 			->addOption( 'path', null, InputOption::VALUE_REQUIRED, 'Path and file to get' )
-			->addOption( 'org', null, InputOption::VALUE_REQUIRED, 'Org for the repo', 'moderntribe' )
+			->addOption( 'org', null, InputOption::VALUE_REQUIRED, 'Org for the repo', 'the-events-calendar' )
 			->addOption( 'ref', null, InputOption::VALUE_REQUIRED, 'The name of the ref (branch, commit, tag, etc)' );
 	}
 
