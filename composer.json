@@ -1,5 +1,5 @@
 {
-  "name": "modern-tribe/tec-utils",
+  "name": "the-events-calendar/tec-utils",
   "description": "Scripts for packaging plugins for deployment",
   "type": "project",
   "require-dev": {
