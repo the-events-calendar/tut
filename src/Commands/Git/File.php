@@ -41,5 +41,7 @@ class File extends Command {
 		$file = $github_client->api( 'repo' )->contents()->download( $org, $repo, $path, $ref );
 
 		echo $file;
+
+		return 0;
 	}
 }
