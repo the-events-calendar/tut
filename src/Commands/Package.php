@@ -693,8 +693,6 @@ class Package extends Command {
 			$pool->add( $process, [ 'composer' ] );
 		}
 
-		$pool->add( new Process( 'npm install gulp-cli -g' ), [ 'npm' ] );
-
 		$lines = new Lines( $this->output, $pool );
 
 		return $lines->run();
