@@ -93,6 +93,8 @@ class Create extends Command {
 			return 1;
 		}
 
+		sleep( 5 );
+
 		$output->write( '<fg=cyan>Checking out the extension to tmp...</>' );
 		$path = $this->clone_repo();
 		$output->write( '<fg=green>Done!</>' . "\n" );
