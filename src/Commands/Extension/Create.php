@@ -225,7 +225,7 @@ class Create extends Command {
 
 		$args = [
 			'--repo'          => "{$this->org}/{$this->repo}",
-			'--ref'           => 'master',
+			'--ref'           => 'main',
 			'--path'          => sys_get_temp_dir() . '/' . uniqid( 'tribe-ext-', true ),
 			'--single-branch' => true,
 		];
