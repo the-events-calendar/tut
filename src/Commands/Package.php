@@ -712,6 +712,7 @@ class Package extends Command {
 		$has_common = $this->has_common( $plugin );
 
 		$this->output->writeln( "<fg=cyan;options=bold>Running yarn install and composer install</>" );
+		$this->run_process( 'nvm install $(cat .nvmrc)' );
 
 		$pool = new Pool();
 		$pool->add( new Process( '. ' . $this->get_nvm_path() . ' && nvm use && yarn install' ), [ 'yarn' ] );
