@@ -61,7 +61,7 @@ class Build extends Command {
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ) {
-		if( ! $this->nvm_exists() ) {
+		if ( ! $this->nvm_exists() ) {
 			$this->io->error( 'NVM needs to exist within ' . self::get_home_dir() );
 			exit( 1 );
 		}
@@ -98,14 +98,14 @@ class Build extends Command {
 		$pool = new Pool();
 
 		$this->output->writeln( '<fg=cyan>* Running composer install</>', OutputInterface::VERBOSITY_VERBOSE );
-		$this->output->writeln( '<fg=cyan>* Running npm install</>', OutputInterface::VERBOSITY_VERBOSE );
+		$this->output->writeln( '<fg=cyan>* Running yarn install</>', OutputInterface::VERBOSITY_VERBOSE );
 
 		$pool->add( new Process( 'composer dump-autoload && composer install' ), [ 'composer' ] );
-		$pool->add( new Process( 'bash ' . $this->get_nvm_path() . ' && nvm use && npm install && npm update product-taskmaster' ), [ 'npm' ] );
+		$pool->add( new Process( '. ' . $this->get_nvm_path() . ' && nvm use && yarn install' ), [ 'yarn' ] );
 
 		if ( $this->has_common ) {
 			$pool->add( new Process( 'cd common && composer dump-autoload && composer install' ), [ 'composer common' ] );
-			$pool->add( new Process( 'cd common && bash ' . $this->get_nvm_path() . ' && nvm use && npm install && npm update product-taskmaster' ), [ 'npm common' ] );
+			$pool->add( new Process( 'cd common && . ' . $this->get_nvm_path() . ' && nvm use && yarn install' ), [ 'yarn common' ] );
 		}
 
 		$lines = new Lines( $this->output, $pool );
@@ -115,10 +115,10 @@ class Build extends Command {
 
 		$pool = new Pool();
 
-		$pool->add( new Process( 'bash ' . $this->get_nvm_path() . ' && nvm use && gulp' ), [ 'gulp' ] );
+		$pool->add( new Process( '. ' . $this->get_nvm_path() . ' && nvm use && yarn run gulp' ), [ 'gulp' ] );
 
 		if ( $this->has_common ) {
-			$pool->add( new Process( 'cd common && bash ' . $this->get_nvm_path() . ' && nvm use && gulp' ), [ 'gulp common' ] );
+			$pool->add( new Process( 'cd common && . ' . $this->get_nvm_path() . ' && nvm use && yarn run gulp' ), [ 'gulp common' ] );
 		}
 
 		$lines = new Lines( $this->output, $pool );
@@ -127,7 +127,7 @@ class Build extends Command {
 		if ( file_exists( 'webpack.config.js' ) ) {
 			$this->output->writeln( '<fg=cyan>* Gulp Webpack</>', OutputInterface::VERBOSITY_VERBOSE );
 			// gulp webpack with a timeout of 15 minutes
-			$this->run_process( 'bash ' . $this->get_nvm_path() . ' && nvm use && gulp webpack', true, 900 );
+			$this->run_process( '. ' . $this->get_nvm_path() . ' && nvm use && yarn run gulp webpack', true, 900 );
 		}
 	}
 }

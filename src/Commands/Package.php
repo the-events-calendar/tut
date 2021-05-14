@@ -87,6 +87,33 @@ class Package extends Command {
 	 */
 	public $do_plugin_selection = true;
 
+	/**
+	 * The $HOME directory (without trailing slash).
+	 *
+	 * @return string
+	 */
+	private static function get_home_dir() {
+		return (string) getenv( 'HOME' );
+	}
+
+	/**
+	 * Whether NVM is detected on the system.
+	 *
+	 * @return bool
+	 */
+	private function nvm_exists() {
+		return file_exists( $this->get_nvm_path() );
+	}
+
+	/**
+	 * The expected location of NVM, whether or not it exists.
+	 *
+	 * @return string
+	 */
+	private function get_nvm_path() {
+		return self::get_home_dir() . '/.nvm/nvm.sh';
+	}
+
 	protected function configure() {
 		parent::configure();
 
@@ -107,6 +134,11 @@ class Package extends Command {
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ) {
+		if ( ! $this->nvm_exists() ) {
+			$this->io->error( 'NVM needs to exist within ' . self::get_home_dir() );
+			exit( 1 );
+		}
+
 		$this->stopwatch = new Stopwatch();
 
 		$this->stopwatch->start( 'execution' );
@@ -502,7 +534,7 @@ class Package extends Command {
 			chdir( $plugin_dir );
 
 			/**
-			 * Runs npm install for the current plugin and common
+			 * Runs yarn install for the current plugin and common
 			 */
 			$this->run_pre_build_installs( $plugin );
 
@@ -521,7 +553,7 @@ class Package extends Command {
 
 				// package up the zip
 				$this->output->writeln( '<fg=cyan>* Zipping content</>', OutputInterface::VERBOSITY_VERBOSE );
-				$process = $this->run_process( 'gulp zip' );
+				$process = $this->run_process( '. ' . $this->get_nvm_path() . ' && nvm use && yarn run gulp zip' );
 
 				$this->run_process( 'git checkout package.json' );
 			}
@@ -670,7 +702,7 @@ class Package extends Command {
 	}
 
 	/**
-	 * Run npm install and composer update for a given plugin and runs on common
+	 * Run yarn install and composer update for a given plugin and runs on common
 	 *
 	 * @param object $plugin Plugin we are running this for
 	 *
@@ -679,16 +711,16 @@ class Package extends Command {
 	private function run_pre_build_installs( $plugin ) {
 		$has_common = $this->has_common( $plugin );
 
-		$this->output->writeln( "<fg=cyan;options=bold>Running npm install and composer install</>" );
+		$this->output->writeln( "<fg=cyan;options=bold>Running yarn install and composer install</>" );
 
 		$pool = new Pool();
-		$pool->add( new Process( 'npm ci && npm update product-taskmaster --no-save' ), [ 'npm' ] );
+		$pool->add( new Process( '. ' . $this->get_nvm_path() . ' && nvm use && yarn install' ), [ 'yarn' ] );
 
 		if ( $has_common ) {
-			$pool->add( new Process( "cd common && npm ci && npm update product-taskmaster --no-save" ), [ 'npm common' ] );
+			$pool->add( new Process( 'cd common && . ' . $this->get_nvm_path() . ' && nvm use && yarn install' ), [ 'yarn common' ] );
 		}
 
-		$composer_processes = $this->get_composer_processes( 'update', $plugin, '--no-dev' );
+		$composer_processes = $this->get_composer_processes( 'install', $plugin, '--no-dev' );
 		foreach ( $composer_processes as $process ) {
 			$pool->add( $process, [ 'composer' ] );
 		}
@@ -720,17 +752,17 @@ class Package extends Command {
 		$this->output->writeln( '<fg=cyan>* Compiling PostCSS</>', OutputInterface::VERBOSITY_VERBOSE );
 		$this->output->writeln( '<fg=cyan>* Compressing JS</>', OutputInterface::VERBOSITY_VERBOSE );
 
-		$pool->add( new Process( 'gulp glotpress' ), [ 'glotpress' ] );
-		$pool->add( new Process( 'gulp postcss' ), [ 'postcss' ] );
-		$pool->add( new Process( 'gulp compress-js' ), [ 'compress-js' ] );
+		$pool->add( new Process( '. ' . $this->get_nvm_path() . ' && nvm use && yarn run gulp glotpress' ), [ 'glotpress' ] );
+		$pool->add( new Process( '. ' . $this->get_nvm_path() . ' && nvm use && yarn run gulp postcss' ), [ 'postcss' ] );
+		$pool->add( new Process( '. ' . $this->get_nvm_path() . ' && nvm use && yarn run gulp compress-js' ), [ 'compress-js' ] );
 
 		if ( $has_common ) {
 			$this->output->writeln( '<fg=cyan;options=bold>Fetching common lang files</>', OutputInterface::VERBOSITY_NORMAL );
 			$this->output->writeln( '<fg=cyan>* Compiling common PostCSS</>', OutputInterface::VERBOSITY_VERBOSE );
 			$this->output->writeln( '<fg=cyan>* Compressing common JS</>', OutputInterface::VERBOSITY_VERBOSE );
-			$pool->add( new Process( 'cd common && gulp glotpress' ), [ 'glotpress common' ] );
-			$pool->add( new Process( 'cd common && gulp postcss' ), [ 'postcss common' ] );
-			$pool->add( new Process( 'cd common && gulp compress-js' ), [ 'compress-js common' ] );
+			$pool->add( new Process( 'cd common && . ' . $this->get_nvm_path() . ' && nvm use && yarn run gulp glotpress' ), [ 'glotpress common' ] );
+			$pool->add( new Process( 'cd common && . ' . $this->get_nvm_path() . ' && nvm use && yarn run gulp postcss' ), [ 'postcss common' ] );
+			$pool->add( new Process( 'cd common && . ' . $this->get_nvm_path() . ' && nvm use && yarn run gulp compress-js' ), [ 'compress-js common' ] );
 		}
 
 		$lines = new Lines( $this->output, $pool );
@@ -738,18 +770,18 @@ class Package extends Command {
 
 		$this->output->writeln( '<fg=cyan>* Compressing CSS</>', OutputInterface::VERBOSITY_VERBOSE );
 
-		$process = $this->run_process( 'gulp compress-css' );
+		$process = $this->run_process( '. ' . $this->get_nvm_path() . ' && nvm use && yarn run gulp compress-css' );
 
 		if ( $has_common ) {
 			$this->output->writeln( '<fg=cyan>* Compressing common CSS</>', OutputInterface::VERBOSITY_VERBOSE );
-			$this->run_process( 'cd common && gulp compress-css' );
+			$process = $this->run_process( 'cd common && . ' . $this->get_nvm_path() . ' && nvm use && yarn run gulp compress-css' );
 		}
 
 		if ( file_exists( 'webpack.config.js' ) ) {
 			// running webpack
 			$this->output->writeln( '<fg=cyan>* Webpack build</>', OutputInterface::VERBOSITY_VERBOSE );
 			// gulp webpack with a timeout of 15 minutes
-			$process = $this->run_process( 'gulp webpack', true, 900 );
+			$process = $this->run_process( '. ' . $this->get_nvm_path() . ' && nvm use && yarn run gulp webpack', true, 900 );
 		}
 
 		return $process;
