@@ -688,7 +688,7 @@ class Package extends Command {
 			$pool->add( new Process( "cd common && npm ci && npm update product-taskmaster --no-save" ), [ 'npm common' ] );
 		}
 
-		$composer_processes = $this->get_composer_processes( 'update', $plugin, '--no-dev' );
+		$composer_processes = $this->get_composer_processes( 'install', $plugin, '--no-dev' );
 		foreach ( $composer_processes as $process ) {
 			$pool->add( $process, [ 'composer' ] );
 		}
