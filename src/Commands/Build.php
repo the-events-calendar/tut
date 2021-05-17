@@ -115,10 +115,10 @@ class Build extends Command {
 
 		$pool = new Pool();
 
-		$pool->add( new Process( 'bash ' . $this->get_nvm_path() . ' && nvm use && gulp' ), [ 'gulp' ] );
+		$pool->add( new Process( 'bash ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp' ), [ 'gulp' ] );
 
 		if ( $this->has_common ) {
-			$pool->add( new Process( 'cd common && bash ' . $this->get_nvm_path() . ' && nvm use && gulp' ), [ 'gulp common' ] );
+			$pool->add( new Process( 'cd common && bash ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp' ), [ 'gulp common' ] );
 		}
 
 		$lines = new Lines( $this->output, $pool );
@@ -127,7 +127,7 @@ class Build extends Command {
 		if ( file_exists( 'webpack.config.js' ) ) {
 			$this->output->writeln( '<fg=cyan>* Gulp Webpack</>', OutputInterface::VERBOSITY_VERBOSE );
 			// gulp webpack with a timeout of 15 minutes
-			$this->run_process( 'bash ' . $this->get_nvm_path() . ' && nvm use && gulp webpack', true, 900 );
+			$this->run_process( 'bash ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp webpack', true, 900 );
 		}
 	}
 }

@@ -521,7 +521,7 @@ class Package extends Command {
 
 				// package up the zip
 				$this->output->writeln( '<fg=cyan>* Zipping content</>', OutputInterface::VERBOSITY_VERBOSE );
-				$process = $this->run_process( 'gulp zip' );
+				$process = $this->run_process( './node_modules/.bin/gulp zip' );
 
 				$this->run_process( 'git checkout package.json' );
 			}
@@ -720,17 +720,17 @@ class Package extends Command {
 		$this->output->writeln( '<fg=cyan>* Compiling PostCSS</>', OutputInterface::VERBOSITY_VERBOSE );
 		$this->output->writeln( '<fg=cyan>* Compressing JS</>', OutputInterface::VERBOSITY_VERBOSE );
 
-		$pool->add( new Process( 'gulp glotpress' ), [ 'glotpress' ] );
-		$pool->add( new Process( 'gulp postcss' ), [ 'postcss' ] );
-		$pool->add( new Process( 'gulp compress-js' ), [ 'compress-js' ] );
+		$pool->add( new Process( './node_modules/.bin/gulp glotpress' ), [ 'glotpress' ] );
+		$pool->add( new Process( './node_modules/.bin/gulp postcss' ), [ 'postcss' ] );
+		$pool->add( new Process( './node_modules/.bin/gulp compress-js' ), [ 'compress-js' ] );
 
 		if ( $has_common ) {
 			$this->output->writeln( '<fg=cyan;options=bold>Fetching common lang files</>', OutputInterface::VERBOSITY_NORMAL );
 			$this->output->writeln( '<fg=cyan>* Compiling common PostCSS</>', OutputInterface::VERBOSITY_VERBOSE );
 			$this->output->writeln( '<fg=cyan>* Compressing common JS</>', OutputInterface::VERBOSITY_VERBOSE );
-			$pool->add( new Process( 'cd common && gulp glotpress' ), [ 'glotpress common' ] );
-			$pool->add( new Process( 'cd common && gulp postcss' ), [ 'postcss common' ] );
-			$pool->add( new Process( 'cd common && gulp compress-js' ), [ 'compress-js common' ] );
+			$pool->add( new Process( 'cd common && ./node_modules/.bin/gulp glotpress' ), [ 'glotpress common' ] );
+			$pool->add( new Process( 'cd common && ./node_modules/.bin/gulp postcss' ), [ 'postcss common' ] );
+			$pool->add( new Process( 'cd common && ./node_modules/.bin/gulp compress-js' ), [ 'compress-js common' ] );
 		}
 
 		$lines = new Lines( $this->output, $pool );
@@ -738,18 +738,18 @@ class Package extends Command {
 
 		$this->output->writeln( '<fg=cyan>* Compressing CSS</>', OutputInterface::VERBOSITY_VERBOSE );
 
-		$process = $this->run_process( 'gulp compress-css' );
+		$process = $this->run_process( './node_modules/.bin/gulp compress-css' );
 
 		if ( $has_common ) {
 			$this->output->writeln( '<fg=cyan>* Compressing common CSS</>', OutputInterface::VERBOSITY_VERBOSE );
-			$this->run_process( 'cd common && gulp compress-css' );
+			$this->run_process( 'cd common && ./node_modules/.bin/gulp compress-css' );
 		}
 
 		if ( file_exists( 'webpack.config.js' ) ) {
 			// running webpack
 			$this->output->writeln( '<fg=cyan>* Webpack build</>', OutputInterface::VERBOSITY_VERBOSE );
 			// gulp webpack with a timeout of 15 minutes
-			$process = $this->run_process( 'gulp webpack', true, 900 );
+			$process = $this->run_process( './node_modules/.bin/gulp webpack', true, 900 );
 		}
 
 		return $process;
