@@ -93,6 +93,8 @@ class Create extends Command {
 			return 1;
 		}
 
+		sleep( 5 );
+
 		$output->write( '<fg=cyan>Checking out the extension to tmp...</>' );
 		$path = $this->clone_repo();
 		$output->write( '<fg=green>Done!</>' . "\n" );
@@ -225,8 +227,9 @@ class Create extends Command {
 
 		$args = [
 			'--repo'          => "{$this->org}/{$this->repo}",
-			'--ref'           => 'master',
-			'--path'          => sys_get_temp_dir() . '/' . uniqid( 'tribe-ext-', true ),
+			'--ref'           => 'main',
+			'--path'          => sys_get_temp_dir(),
+			'--alias'         => uniqid( 'tribe-ext-', true ),
 			'--single-branch' => true,
 		];
 

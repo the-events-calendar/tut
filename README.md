@@ -25,8 +25,9 @@
 
 1. Clone the repository `git clone git@github.com:the-events-calendar/tut.git`
 1. Go to the new directory `cd tut`.
-1. Run `composer install`
-1. Add the cloned repo into your PATH (edit your `.bashrc` / `.bash_profile` / `.zshrc` or whatever)
+2. Copy `.env.sample` to `.env`. (you don't have to fill in the values for most commands to work)
+3. Run `composer install`
+4. Add the cloned repo into your PATH (edit your `.bashrc` / `.bash_profile` / `.zshrc` or whatever)
 
 ```
 export PATH=/path/to/tut:$PATH
