@@ -130,7 +130,7 @@ class Build extends Command {
 
 		if ( $this->has_common ) {
 			$pool->add( new Process( 'cd common && composer dump-autoload && composer install' ), [ 'composer common' ] );
-			$pool->add( new Process( 'cd common && . ' . $this->get_nvm_path() . ' && nvm use && npm install && npm update product-taskmaster' ), [ 'npm common' ] );
+			$pool->add( new Process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && npm install && npm update product-taskmaster' ), [ 'npm common' ] );
 		}
 
 		$lines = new Lines( $this->output, $pool );
@@ -143,7 +143,7 @@ class Build extends Command {
 		$pool->add( new Process( $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp' ), [ 'gulp' ] );
 
 		if ( $this->has_common ) {
-			$pool->add( new Process( 'cd common && . ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp' ), [ 'gulp common' ] );
+			$pool->add( new Process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp' ), [ 'gulp common' ] );
 		}
 
 		$lines = new Lines( $this->output, $pool );

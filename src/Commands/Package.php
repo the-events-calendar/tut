@@ -743,7 +743,7 @@ class Package extends Command {
 		$pool->add( new Process( $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && npm ci && npm update product-taskmaster --no-save' ), [ 'npm' ] );
 
 		if ( $has_common ) {
-			$pool->add( new Process( 'cd common && . ' . $this->get_nvm_path() . ' && nvm use && npm ci && npm update product-taskmaster --no-save' ), [ 'npm common' ] );
+			$pool->add( new Process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && npm ci && npm update product-taskmaster --no-save' ), [ 'npm common' ] );
 		}
 
 		$composer_processes = $this->get_composer_processes( 'install', $plugin, '--no-dev' );
@@ -786,9 +786,9 @@ class Package extends Command {
 			$this->output->writeln( '<fg=cyan;options=bold>Fetching common lang files</>', OutputInterface::VERBOSITY_NORMAL );
 			$this->output->writeln( '<fg=cyan>* Compiling common PostCSS</>', OutputInterface::VERBOSITY_VERBOSE );
 			$this->output->writeln( '<fg=cyan>* Compressing common JS</>', OutputInterface::VERBOSITY_VERBOSE );
-			$pool->add( new Process( 'cd common && . ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp glotpress' ), [ 'glotpress common' ] );
-			$pool->add( new Process( 'cd common && . ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp postcss' ), [ 'postcss common' ] );
-			$pool->add( new Process( 'cd common && . ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp compress-js' ), [ 'compress-js common' ] );
+			$pool->add( new Process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp glotpress' ), [ 'glotpress common' ] );
+			$pool->add( new Process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp postcss' ), [ 'postcss common' ] );
+			$pool->add( new Process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp compress-js' ), [ 'compress-js common' ] );
 		}
 
 		$lines = new Lines( $this->output, $pool );
@@ -800,7 +800,7 @@ class Package extends Command {
 
 		if ( $has_common ) {
 			$this->output->writeln( '<fg=cyan>* Compressing common CSS</>', OutputInterface::VERBOSITY_VERBOSE );
-			$this->run_process( 'cd common && . ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp compress-css' );
+			$this->run_process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp compress-css' );
 		}
 
 		if ( file_exists( 'webpack.config.js' ) ) {
