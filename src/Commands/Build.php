@@ -33,6 +33,31 @@ class Build extends Command {
 		return (string) getenv( 'HOME' );
 	}
 
+	/**
+	 * Returns the current Operating System family.
+	 *
+	 * @return string The human-readable name of the OS PHP is running on. One of `Linux`, `macOS`, or `Unknown`.
+	 */
+	private function os() {
+		$map = [
+			'dar' => 'macOS',
+			'lin' => 'Linux',
+		];
+
+		$key = strtolower( substr( PHP_OS, 0, 3 ) );
+
+		return isset( $map[ $key ] ) ? $map[ $key ] : 'Unknown';
+	}
+
+	/**
+	 * Returns the source command based on OS.
+	 *
+	 * @return string The source command for the OS PHP is running on.
+	 */
+	private function get_source_command() {
+		return 'macOS' === $this->os() ? 'source' : '.';
+	}
+
 	protected function configure() {
 		parent::configure();
 
@@ -101,7 +126,7 @@ class Build extends Command {
 		$this->output->writeln( '<fg=cyan>* Running npm install</>', OutputInterface::VERBOSITY_VERBOSE );
 
 		$pool->add( new Process( 'composer dump-autoload && composer install' ), [ 'composer' ] );
-		$pool->add( new Process( '. ' . $this->get_nvm_path() . ' && nvm use && npm install && npm update product-taskmaster' ), [ 'npm' ] );
+		$pool->add( new Process( $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && npm install && npm update product-taskmaster' ), [ 'npm' ] );
 
 		if ( $this->has_common ) {
 			$pool->add( new Process( 'cd common && composer dump-autoload && composer install' ), [ 'composer common' ] );
@@ -115,7 +140,7 @@ class Build extends Command {
 
 		$pool = new Pool();
 
-		$pool->add( new Process( '. ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp' ), [ 'gulp' ] );
+		$pool->add( new Process( $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp' ), [ 'gulp' ] );
 
 		if ( $this->has_common ) {
 			$pool->add( new Process( 'cd common && . ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp' ), [ 'gulp common' ] );
@@ -127,7 +152,7 @@ class Build extends Command {
 		if ( file_exists( 'webpack.config.js' ) ) {
 			$this->output->writeln( '<fg=cyan>* Gulp Webpack</>', OutputInterface::VERBOSITY_VERBOSE );
 			// gulp webpack with a timeout of 15 minutes
-			$this->run_process( '. ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp webpack', true, 900 );
+			$this->run_process( $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp webpack', true, 900 );
 		}
 	}
 }
