@@ -713,6 +713,7 @@ class Package extends Command {
 
 		$this->output->writeln( "<fg=cyan;options=bold>Running yarn install and composer install</>" );
 		$this->run_process( '. ' . $this->get_nvm_path() . ' && nvm install $(cat .nvmrc)' );
+		$this->run_process( 'yarn cache clean' );
 
 		$pool = new Pool();
 		$pool->add( new Process( '. ' . $this->get_nvm_path() . ' && nvm use && yarn install --network-concurrency 1' ), [ 'yarn' ] );
