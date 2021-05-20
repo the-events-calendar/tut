@@ -715,12 +715,10 @@ class Package extends Command {
 		$this->run_process( '. ' . $this->get_nvm_path() . ' && nvm install $(cat .nvmrc)' );
 
 		$pool = new Pool();
-		// $pool->add( new Process( '. ' . $this->get_nvm_path() . ' && nvm use && yarn install' ), [ 'yarn' ] );
-		$this->run_process( '. ' . $this->get_nvm_path() . ' && nvm use && yarn install' );
+		$pool->add( new Process( '. ' . $this->get_nvm_path() . ' && nvm use && yarn install --mutex file' ), [ 'yarn' ] );
 
 		if ( $has_common ) {
-			// $pool->add( new Process( 'cd common && . ' . $this->get_nvm_path() . ' && nvm use && yarn install' ), [ 'yarn common' ] );
-			$this->run_process( 'cd common && . ' . $this->get_nvm_path() . ' && nvm use && yarn install' );
+			$pool->add( new Process( 'cd common && . ' . $this->get_nvm_path() . ' && nvm use && yarn install --mutex file' ), [ 'yarn common' ] );
 		}
 
 		$composer_processes = $this->get_composer_processes( 'install', $plugin, '--no-dev' );
