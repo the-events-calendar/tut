@@ -740,10 +740,10 @@ class Package extends Command {
 		$this->run_process( $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm install $(cat .nvmrc)' );
 
 		$pool = new Pool();
-		$pool->add( new Process( $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && npm ci && npm update product-taskmaster --no-save' ), [ 'npm' ] );
+		$pool->add( new Process( $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && npm ci' ), [ 'npm' ] );
 
 		if ( $has_common ) {
-			$pool->add( new Process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && npm ci && npm update product-taskmaster --no-save' ), [ 'npm common' ] );
+			$pool->add( new Process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && npm ci' ), [ 'npm common' ] );
 		}
 
 		$composer_processes = $this->get_composer_processes( 'install', $plugin, '--no-dev' );
