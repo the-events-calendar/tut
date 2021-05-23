@@ -321,7 +321,7 @@ class Package extends Command {
 				$version = $version_option ?: $main_version;
 			}
 
-			$process     = $this->run_process( 'git rev-parse --short HEAD', false );
+			$process     = $this->run_process( 'git rev-parse --short=8 HEAD', false );
 			$plugin_hash = trim( $process->getOutput() );
 
 			// if the build number isn't set, get it from the latest commit
