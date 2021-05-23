@@ -233,7 +233,7 @@ class Package extends Command {
 			$stashed_work = false;
 			$process      = $this->run_process( 'git status -s', false );
 			if ( trim( $process->getOutput() ) ) {
-				$process              = $this->run_process( 'git rev-parse --short HEAD', false );
+				$process              = $this->run_process( 'git rev-parse --short=8 HEAD', false );
 				$original_plugin_hash = trim( $process->getOutput() );
 
 				// stash existing work (including untracked files) so we have a clean directory
