@@ -47,6 +47,7 @@ export PATH=/path/to/tut:$PATH
 | [`generate-css-override`](docs/commands/generate-css-override.md) | Finds CSS rules for the purposes of providing overrides. |
 | [`get-build-number`](docs/commands/get-build-number.md) | Gets the build number based on recent commit timestamp |
 | [`get-hash`](docs/commands/get-hash.md) | Gets current repo hash |
+| [`get-zip-filename`](docs/commands/get-zip-filename.md) | Gets the expected zip filename for the plugin |
 | [`list-templates`](docs/commands/list-templates.md) | List templates in plugin |
 | [`package`](docs/commands/package.md) | Package zips for release |
 | [`release-date`](docs/commands/release-date.md) | Updates the release date in the readme.txt changelog |
