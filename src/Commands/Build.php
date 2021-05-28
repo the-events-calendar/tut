@@ -126,11 +126,11 @@ class Build extends Command {
 		$this->output->writeln( '<fg=cyan>* Running npm install</>', OutputInterface::VERBOSITY_VERBOSE );
 
 		$pool->add( new Process( 'composer dump-autoload && composer install' ), [ 'composer' ] );
-		$pool->add( new Process( $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && npm install && npm update product-taskmaster' ), [ 'npm' ] );
+		$pool->add( new Process( $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && npm ci' ), [ 'npm' ] );
 
 		if ( $this->has_common ) {
 			$pool->add( new Process( 'cd common && composer dump-autoload && composer install' ), [ 'composer common' ] );
-			$pool->add( new Process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && npm install && npm update product-taskmaster' ), [ 'npm common' ] );
+			$pool->add( new Process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && npm ci' ), [ 'npm common' ] );
 		}
 
 		$lines = new Lines( $this->output, $pool );
