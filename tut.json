@@ -127,6 +127,14 @@
 			"version"   : "const VERSION",
 			"alias"     : [ "lec", "loxi-plugin" ],
 			"free"      : true
+		},
+		{
+			"name"      : "ical-tec",
+			"bootstrap" : "plugin.php",
+			"main"      : "plugin.php",
+			"version"   : "'ICALTEC_VERSION'",
+			"alias"     : [ "rbe", "icaltec" ],
+			"free"      : false
 		}
 	],
 	"submodules": [

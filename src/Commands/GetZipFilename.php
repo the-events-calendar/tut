@@ -1,11 +1,10 @@
 <?php
 namespace TUT\Commands;
 
-use TUT\Command as Command;
-
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use TUT\Command as Command;
 
 class GetZipFilename extends Command {
 
@@ -58,9 +57,15 @@ class GetZipFilename extends Command {
 
 			$file = file_get_contents( $plugin->main );
 
-			preg_match( "/.*{$plugin->version}[^']*'([^']*)'.*/", $file, $matches );
+			preg_match( "/.*{$plugin->version}[^']*'(?<version>[^']*)'.*/", $file, $matches );
 
-			$version   = $matches[1];
+			if ( ! isset( $matches['version'] ) ) {
+				$output->writeln( "Could not correctly parse version of {$plugin->name}; is it correctly configured?</error>" );
+				$version = 'undetermined';
+			} else {
+				$version = $matches['version'];
+			}
+
 			$hash      = trim( shell_exec( 'git rev-parse --short=8 HEAD' ) );
 			$timestamp = trim( shell_exec( 'git --no-pager show -s --format=%ct HEAD' ) );
 			$filename  = "{$zip_name}.{$version}-dev-{$timestamp}-${hash}.zip";
