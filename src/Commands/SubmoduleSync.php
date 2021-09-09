@@ -1,6 +1,7 @@
 <?php
 namespace TUT\Commands;
 
+use Github;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputOption;
 use TUT\Command as Command;
@@ -198,7 +199,8 @@ class SubmoduleSync extends Command {
 	 */
 	protected function prep_branches( $repo ) {
 		$client = $this->get_github_client();
-		$branches = $client->api( 'repo' )->branches( $this->org, $repo );
+		$paginator = new Github\ResultPager( $client );
+		$branches = $paginator->fetchAll( $client->api( 'repo' ), 'branches', [ $this->org, $repo ] );
 
 		if ( empty( $this->branches[ $repo ] ) ) {
 			$this->branches[ $repo ] = [];
