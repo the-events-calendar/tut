@@ -87,7 +87,7 @@ class Create extends Command {
 		}
 
 		// Make sure the repo is prefixed.
-		$this->repo = "tribe-ext-{$slug}";
+		$this->repo = "tec-labs-{$slug}";
 
 		if ( $do_create && ! $this->create_repo( $output ) ) {
 			return 1;
@@ -145,7 +145,7 @@ class Create extends Command {
 			$template_api = new Template( $client );
 			@$template_api->createRepo(
 				'mt-support',
-				'tribe-ext-extension-template',
+				'tec-labs-extension-template',
 				[
 					'owner' => $this->org,
 					'name'  => $this->repo,
@@ -229,7 +229,7 @@ class Create extends Command {
 			'--repo'          => "{$this->org}/{$this->repo}",
 			'--ref'           => 'main',
 			'--path'          => sys_get_temp_dir(),
-			'--alias'         => uniqid( 'tribe-ext-', true ),
+			'--alias'         => uniqid( 'tec-labs-', true ),
 			'--single-branch' => true,
 		];
 
@@ -252,6 +252,7 @@ class Create extends Command {
 
 		foreach ( $vars as $key => $value ) {
 			$template_vars[ strtoupper( "__TRIBE_{$key}__" ) ] = $value;
+			$template_vars[ strtoupper( "__TEC_{$key}__" ) ] = $value;
 		}
 
 		$directory = new \RecursiveDirectoryIterator( $path );

@@ -50,9 +50,9 @@ class SetDependency extends Command {
 			return 1;
 		}
 
-		if ( false === strpos( $repo, 'tribe-ext-' ) ) {
+		if ( false === strpos( $repo, 'tec-labs-' ) ) {
 			// Make sure the repo is prefixed.
-			$this->repo = "tribe-ext-{$repo}";
+			$this->repo = "tec-labs-{$repo}";
 		}
 
 		if ( $org ) {
@@ -98,7 +98,7 @@ class SetDependency extends Command {
 		$args = [
 			'--repo'          => "{$this->org}/{$this->repo}",
 			'--ref'           => 'master',
-			'--path'          => sys_get_temp_dir() . '/' . uniqid( 'tribe-ext-', true ),
+			'--path'          => sys_get_temp_dir() . '/' . uniqid( 'tec-labs-', true ),
 			'--single-branch' => true,
 		];
 
