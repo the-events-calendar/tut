@@ -575,7 +575,7 @@ class Package extends Command {
 				file_put_contents( 'package.json', json_encode( $package_json_contents ) );
 
 				chdir( $plugin_dir );
-				$mv_command = 'mv ' . $plugin_dir . '/build/' . $rcp_zipped_file .' ' . $plugin_dir . '/' . $file;
+				$mv_command = 'mv ' . $plugin_dir . '/build/' . $rcp_zipped_file .' ' . $this->origin_dir . '/' . $file;
 				$process = $this->run_process( $mv_command );
 
 				$this->run_process( 'git checkout package.json' );
