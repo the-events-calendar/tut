@@ -81,6 +81,14 @@
 			"free"      : true
 		},
 		{
+			"name"      : "restrict-content-pro",
+			"bootstrap" : "restrict-content-pro.php",
+			"main"      : "includes/class-restrict-content-pro.php",
+			"version"   : "const VERSION",
+			"alias"     : [ "rcp" ],
+			"free"      : false
+		},
+		{
 			"name"      : "events-elasticsearch",
 			"bootstrap" : "events-elasticsearch.php",
 			"main"      : "src/Tribe/Main.php",

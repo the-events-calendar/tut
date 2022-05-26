@@ -519,6 +519,7 @@ class Package extends Command {
 			// assume no suffix is required
 			$file_dev_suffix  = null;
 			$destination_file = $file = $zipname . '.' . $zip_version . '.zip';
+			$rcp_zipped_file  = $file = $zipname . '-' . $zip_version . '.zip';
 
 			if ( ! $this->final ) {
 				// if we aren't packaging the final version, we'll need a dev suffix
@@ -563,7 +564,22 @@ class Package extends Command {
 			 */
 			$this->run_pre_build_installs( $plugin );
 
-			if (
+			if ( file_exists( 'Gruntfile.js' ) ) {
+				/**
+				 * Runs the default grunt tasks for packaging
+				 */
+				$this->run_grunt_tasks( $plugin );
+
+				$package_json_contents          = json_decode( file_get_contents( 'package.json' ) );
+				$package_json_contents->version = $version;
+				file_put_contents( 'package.json', json_encode( $package_json_contents ) );
+
+				chdir( $plugin_dir );
+				$mv_command = 'mv ' . $plugin_dir . '/build/' . $rcp_zipped_file .' ' . $plugin_dir . '/' . $file;
+				$process = $this->run_process( $mv_command );
+
+				$this->run_process( 'git checkout package.json' );
+			} elseif (
 				file_exists( 'Gulpfile.js' )
 				|| file_exists( 'gulpfile.js' )
 			) {
@@ -584,7 +600,7 @@ class Package extends Command {
 			}
 
 			$zipped = true;
-			if ( ! $this->has_compiled_files( $plugin ) ) {
+			if ( ! file_exists( 'Gruntfile.js' ) && ! $this->has_compiled_files( $plugin ) ) {
 				$zipped                       = false;
 				$this->messages['warnings'][] = "Packaging for {$plugin->name} failed. CSS and/or JS is missing!";
 				$this->skipped[]              = "{$plugin->name} - CSS and/or JS failed to build correctly.";
@@ -757,6 +773,49 @@ class Package extends Command {
 	}
 
 	/**
+	 * Run grunt tasks for a given plugin and runs on common
+	 *
+	 * @param object $plugin Plugin we are running this for
+	 *
+	 * @return Process
+	 */
+	private function run_grunt_tasks( $plugin ) {
+		$has_common = $this->has_common( $plugin );
+		$plugin_dir = "{$this->origin_dir}/{$plugin->name}";
+
+		$this->output->writeln( "Current path: {$plugin_dir}" );
+
+		$pool = new Pool();
+
+		if ( $has_common ) {
+			$this->output->writeln( 'Gulp packaging common!' );
+
+			$this->output->writeln( '<fg=cyan;options=bold>Fetching common lang files</>', OutputInterface::VERBOSITY_NORMAL );
+			$this->output->writeln( '<fg=cyan>* Compiling common PostCSS</>', OutputInterface::VERBOSITY_VERBOSE );
+			$this->output->writeln( '<fg=cyan>* Compressing common JS</>', OutputInterface::VERBOSITY_VERBOSE );
+			$pool->add( new Process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp glotpress' ), [ 'glotpress common' ] );
+			$pool->add( new Process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp postcss' ), [ 'postcss common' ] );
+			$pool->add( new Process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp compress-js' ), [ 'compress-js common' ] );
+		}
+
+		$lines = new Lines( $this->output, $pool );
+		$lines->run();
+
+		if ( $has_common ) {
+			$this->output->writeln( '<fg=cyan>* Compressing common CSS</>', OutputInterface::VERBOSITY_VERBOSE );
+			$this->run_process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp compress-css' );
+		}
+
+		$this->output->writeln( '<fg=cyan>* Running npm run build</>', OutputInterface::VERBOSITY_VERBOSE );
+		$this->run_process($this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && npm run build');
+
+		$this->output->writeln('<fg=cyan>* Grunt packaging</>', OutputInterface::VERBOSITY_VERBOSE);
+		$process = $this->run_process($this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && grunt build');
+
+		return $process;
+	}
+
+	/**
 	 * Run gulp tasks for a given plugin and runs on common
 	 *
 	 * @param object $plugin Plugin we are running this for
@@ -794,9 +853,9 @@ class Package extends Command {
 		$lines = new Lines( $this->output, $pool );
 		$lines->run();
 
-		$this->output->writeln( '<fg=cyan>* Compressing CSS</>', OutputInterface::VERBOSITY_VERBOSE );
+		$this->output->writeln('<fg=cyan>* Compressing CSS</>', OutputInterface::VERBOSITY_VERBOSE);
 
-		$process = $this->run_process( $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp compress-css' );
+		$process = $this->run_process($this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp compress-css');
 
 		if ( $has_common ) {
 			$this->output->writeln( '<fg=cyan>* Compressing common CSS</>', OutputInterface::VERBOSITY_VERBOSE );
@@ -833,7 +892,7 @@ class Package extends Command {
 	 * @return bool
 	 */
 	protected function has_common( $plugin ) {
-		return in_array( $plugin->name, [ 'the-events-calendar', 'event-tickets' ] );
+		return in_array( $plugin->name, [ 'the-events-calendar', 'event-tickets', 'restrict-content-pro' ] );
 	}
 
 	/**
