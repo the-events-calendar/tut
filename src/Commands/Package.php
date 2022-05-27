@@ -519,7 +519,7 @@ class Package extends Command {
 			// assume no suffix is required
 			$file_dev_suffix  = null;
 			$destination_file = $file = $zipname . '.' . $zip_version . '.zip';
-			$rcp_zipped_file  = $file = $zipname . '-' . $zip_version . '.zip';
+			$rcp_zipped_file  = $zipname . '-' . $zip_version . '.zip';
 
 			if ( ! $this->final ) {
 				// if we aren't packaging the final version, we'll need a dev suffix
@@ -558,6 +558,7 @@ class Package extends Command {
 			}
 
 			chdir( $plugin_dir );
+			$this->output->writeln( 'Changed directory to: ' . $plugin_dir );
 
 			/**
 			 * Runs npm install for the current plugin and common
@@ -619,6 +620,7 @@ class Package extends Command {
 
 			// go back a directory
 			chdir( $this->origin_dir );
+			$this->output->writeln( 'Changed directory to: ' . $this->origin_dir );
 
 			if ( $zipped && ! file_exists( $file ) ) {
 				$zipped = false;
@@ -641,6 +643,7 @@ class Package extends Command {
 
 		// go back into the plugin dir to reset changes
 		chdir( $plugin_dir );
+		$this->output->writeln( 'Changed directory to: ' . $plugin_dir );
 
 		// clean house
 		$this->run_process( 'git reset --hard HEAD', false );
