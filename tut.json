@@ -83,7 +83,7 @@
 		{
 			"name"      : "restrict-content-pro",
 			"bootstrap" : "restrict-content-pro.php",
-			"main"      : "pro/class-restrict-content-pro.php",
+			"main"      : "core/includes/class-restrict-content.php",
 			"version"   : "const VERSION",
 			"alias"     : [ "rcp" ],
 			"free"      : false
