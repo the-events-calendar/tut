@@ -6,15 +6,17 @@
 			"main"      : "src/Tribe/Main.php",
 			"version"   : "VERSION",
 			"alias"     : [ "common" ],
-			"free"      : true
+			"free"      : true,
+			"submodulesync" : true
 		},
 		{
-			"name"      : "the-events-calendar",
-			"bootstrap" : "the-events-calendar.php",
-			"main"      : "src/Tribe/Main.php",
-			"version"   : "VERSION",
-			"alias"     : [ "events", "event", "tec" ],
-			"free"      : true
+			"name"          : "the-events-calendar",
+			"bootstrap"     : "the-events-calendar.php",
+			"main"          : "src/Tribe/Main.php",
+			"version"       : "VERSION",
+			"alias"         : [ "events", "event", "tec" ],
+			"free"          : true,
+			"submodulesync" : true
 		},
 		{
 			"name"      : "events-community",
@@ -22,7 +24,8 @@
 			"main"      : "src/Tribe/Main.php",
 			"version"   : "VERSION",
 			"alias"     : [ "ec", "community", "ce", "the-events-calendar-community-events" ],
-			"free"      : false
+			"free"      : false,
+			"submodulesync" : true
 		},
 		{
 			"name"      : "events-community-tickets",
@@ -30,7 +33,8 @@
 			"main"      : "src/Tribe/Main.php",
 			"version"   : "VERSION",
 			"alias"     : [ "ect", "community-tickets", "ct", "the-events-calendar-community-events-tickets" ],
-			"free"      : false
+			"free"      : false,
+			"submodulesync" : true
 		},
 		{
 			"name"      : "events-eventbrite",
@@ -38,7 +42,8 @@
 			"main"      : "src/Tribe/Main.php",
 			"version"   : "$pluginVersion|VERSION",
 			"alias"     : [ "eb", "eventbrite", "the-events-calendar-eventbrite-tickets" ],
-			"free"      : false
+			"free"      : false,
+			"submodulesync" : true
 		},
 		{
 			"name"      : "events-filterbar",
@@ -46,7 +51,8 @@
 			"main"      : "src/Tribe/View.php",
 			"version"   : "VERSION",
 			"alias"     : [ "filterbar", "the-events-calendar-filterbar" ],
-			"free"      : false
+			"free"      : false,
+			"submodulesync" : true
 		},
 		{
 			"name"      : "events-pro",
@@ -54,15 +60,17 @@
 			"main"      : "src/Tribe/Main.php",
 			"version"   : "VERSION",
 			"alias"     : [ "ecp", "pro", "ep", "events-calendar-pro" ],
-			"free"      : false
+			"free"      : false,
+			"submodulesync" : true
 		},
 		{
-			"name"      : "event-tickets",
-			"bootstrap" : "event-tickets.php",
-			"main"      : "src/Tribe/Main.php",
-			"version"   : "VERSION",
-			"alias"     : [ "et", "tickets", "ticket" ],
-			"free"      : true
+			"name"          : "event-tickets",
+			"bootstrap"     : "event-tickets.php",
+			"main"          : "src/Tribe/Main.php",
+			"version"       : "VERSION",
+			"alias"         : [ "et", "tickets", "ticket" ],
+			"free"          : true,
+			"submodulesync" : true
 		},
 		{
 			"name"      : "event-tickets-plus",
@@ -70,7 +78,8 @@
 			"main"      : "src/Tribe/Main.php",
 			"version"   : "VERSION",
 			"alias"     : [ "et+", "tickets-plus", "plus" ],
-			"free"      : false
+			"free"      : false,
+			"submodulesync" : true
 		},
 		{
 			"name"      : "events-virtual",
@@ -78,7 +87,8 @@
 			"main"      : "src/Tribe/Plugin.php",
 			"version"   : "VERSION",
 			"alias"     : [ "ve", "ev" ],
-			"free"      : true
+			"free"      : true,
+			"submodulesync" : true
 		},
 		{
 			"name"      : "restrict-content-pro",
