@@ -68,6 +68,10 @@ class SubmoduleSync extends Command {
 		foreach ( $this->config->plugins as $plugin ) {
 			$plugin = (object) $plugin;
 
+			if ( ! isset( $plugin->submodulesync ) || $plugin->submodulesync !== true ) {
+				continue;
+			}
+
 			$this->io->write( '<fg=cyan>checking branches on</> <fg=yellow>' . $plugin->name . '</><fg=cyan>:</>' );
 
 			$updated_hash = false;
