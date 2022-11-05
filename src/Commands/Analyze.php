@@ -54,7 +54,6 @@ class Analyze extends Command {
 		$files = $this->get_files( $lines );
 		$file_lines = [];
 
-
 		foreach ( $files as $line => $file ) {
 			$next = next( $files );
 			$next_line = key( $files );
@@ -111,8 +110,8 @@ class Analyze extends Command {
 				}
 
 				$result = (object) [
-					'added' => array_diff( $added, $removed ),
-					'removed' => array_diff( $removed, $added ),
+					'added' => array_unique( array_diff( $added, $removed ) ),
+					'removed' => array_unique( array_diff( $removed, $added ) ),
 				];
 			}
 
