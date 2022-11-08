@@ -217,7 +217,7 @@ class GlotPress extends Command {
 				// Delete the file in that case.
 				unlink( $file_path );
 
-				// Not sure if 2seconds is needed, but it prevents they firewall from catching us.
+				// Not sure if 2 seconds is needed, but it prevents the firewall from catching us.
 				sleep( 2 );
 
 				// Retries to download this file.
