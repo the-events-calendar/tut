@@ -123,9 +123,9 @@ class Analyze extends Command {
 
 			if ( 'changelog' === $output ) {
 
-                if ( empty( $items ) ) {
-                    continue;
-                } elseif ( is_array( $items ) ) {
+				if ( empty( $items ) ) {
+					continue;
+				} elseif ( is_array( $items ) ) {
 					$this->io->writeln( sprintf( '* Tweak - Changed %s: %s', $key, '`' . implode( '`, `', $items ) . '`' ) );
 				} else {
 					if ( ! empty( $items->added ) ) {
@@ -138,9 +138,9 @@ class Analyze extends Command {
 				}
 			} elseif ( 'list' === $output ) {
 
-                if ( empty( $items ) ) {
-                    continue;
-                } elseif ( is_array( $items ) ) {
+				if ( empty( $items ) ) {
+					continue;
+				} elseif ( is_array( $items ) ) {
 					$this->io->writeln( 'Changed' );
 					foreach ( $items as $line ) {
 						$this->io->writeln( '- ' . $line  );
@@ -163,9 +163,9 @@ class Analyze extends Command {
 			} else {
 				$pieces = [];
 
-                if ( empty( $items ) ) {
-                    continue;
-                } elseif ( is_array( $items ) ) {
+				if ( empty( $items ) ) {
+					continue;
+				} elseif ( is_array( $items ) ) {
 					$pieces[] = sprintf( '<h4>%s</h4>', ucfirst( $key ) );
 					$pieces[] = '<ul>';
 					foreach ( $items as $item ) {
