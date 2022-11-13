@@ -100,9 +100,10 @@ class GlotPress extends Command {
 
 			// go back up to the plugins directory
 			chdir( '../' );
+
+			$output->writeln( '<info>-------------------</info>' . "\n" );
 		}
 
-		$output->writeln( '<info>-------------------</info>' );
 		$this->io->success( 'DONE' );
 	}
 
