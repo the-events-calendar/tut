@@ -8,6 +8,8 @@ use Symfony\Component\Process\Process;
 use Symfony\Component\Stopwatch\Stopwatch;
 use TUT\Command as Command;
 
+use Symfony\Component\Console\Input\ArrayInput;
+
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -816,6 +818,24 @@ class Package extends Command {
 		$process = $this->run_process($this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && grunt build');
 
 		return $process;
+	}
+
+	private function run_i18n_glotpress( $plugin ) {
+		$has_common = $this->has_common( $plugin );
+		$plugin_dir = "{$this->origin_dir}/{$plugin->name}";
+
+		$this->output->writeln( "Current path: {$plugin_dir}" );
+		$this->output->writeln( '<fg=cyan;options=bold>Fetching lang files</>', OutputInterface::VERBOSITY_NORMAL );
+
+		$command = $this->getApplication()->find( 'i18n:glotpress' );
+
+        $arguments = [
+            'plugin' => $plugin->name,
+        ];
+
+        $glotpress_input = new ArrayInput( $arguments );
+        $return_code = $command->run( $glotpress_input, $this->output );
+
 	}
 
 	/**
