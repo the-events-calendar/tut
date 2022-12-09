@@ -47,7 +47,11 @@ class GetZipFilename extends Command {
 
 			if ( file_exists( 'package.json' ) ) {
 				$package_json = json_decode( file_get_contents( 'package.json' ) );
-				$zip_name     = $package_json->_zipname;
+				if ( $plugin->name === 'learndash-core' ) {
+					$zip_name     = 'learndash-core';
+				} else {
+					$zip_name     = $package_json->_zipname;
+				}
 			}
 
 			if ( ! file_exists( $plugin->main ) ) {
@@ -57,7 +61,11 @@ class GetZipFilename extends Command {
 
 			$file = file_get_contents( $plugin->main );
 
-			preg_match( "/.*{$plugin->version}[^']*'(?<version>[^']*)'.*/", $file, $matches );
+			if ( preg_match( '/define/', $plugin->version ) ) {
+				preg_match( '/.*' . preg_quote( $plugin->version ) . "(?<version>[^']*)'.*/", $file, $matches );
+			} else {
+				preg_match( '/.*' . $plugin->version . "[^']*'(?<version>[^']*)'.*/", $file, $matches );
+			}
 
 			if ( ! isset( $matches['version'] ) ) {
 				$output->writeln( "Could not correctly parse version of {$plugin->name}; is it correctly configured?</error>" );
