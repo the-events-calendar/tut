@@ -337,7 +337,7 @@ class Package extends Command {
 				$current_common_hash = trim( $process->getOutput() );
 				chdir( 'common' );
 
-				$common_file          = file_get_contents( $plugin->main );
+				$common_file          = file_get_contents( 'src/Tribe/Main.php' );
 				$common_version_regex = '/.*' . preg_quote( $plugin->version ) . "[^']*'([^']*)'.*/";
 				preg_match( $common_version_regex, $common_file, $matches );
 				$current_common_version = trim( $matches[1] );
@@ -349,7 +349,7 @@ class Package extends Command {
 					$process         = $this->run_process( 'git ls-tree ' . $current_common_version . ' common', false );
 					$old_common_hash = trim( $process->getOutput() );
 				} else {
-					$common_file     = file_get_contents( $plugin->main );
+					$common_file     = file_get_contents( 'src/Tribe/Main.php' );
 					$old_common_hash = trim( $current_common_hash );
 					preg_match( $common_version_regex, $common_file, $matches );
 					$old_common_version = trim( $matches[1] );
