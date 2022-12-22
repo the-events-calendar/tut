@@ -806,14 +806,14 @@ class Package extends Command {
 
 		if ( $has_common ) {
 			$this->output->writeln( '<fg=cyan>* Compressing common CSS</>', OutputInterface::VERBOSITY_VERBOSE );
-			$this->run_process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp compress-css' );
+			$this->run_process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp compress-css', true, 360 );
 		}
 
 		$this->output->writeln( '<fg=cyan>* Running npm run build</>', OutputInterface::VERBOSITY_VERBOSE );
-		$this->run_process($this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && npm run build');
+		$this->run_process($this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && npm run build', true, 360 );
 
 		$this->output->writeln('<fg=cyan>* Grunt packaging</>', OutputInterface::VERBOSITY_VERBOSE);
-		$process = $this->run_process($this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && grunt build');
+		$process = $this->run_process($this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && grunt build', true, 360 );
 
 		return $process;
 	}
