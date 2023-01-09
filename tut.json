@@ -132,12 +132,12 @@
 			"submodulesync" : true
 		},
 		{
-			"repo"      : "the-events-calendar/events-automator",
-			"name"      : "events-automator",
+			"repo"      : "the-events-calendar/event-automator",
+			"name"      : "event-automator",
 			"bootstrap" : "events-automator.php",
 			"main"      : "src/Events_Automator/Plugin.php",
 			"version"   : "VERSION",
-			"alias"     : [ "event-automator", "automator", "auto", "ea" ],
+			"alias"     : [ "events-automator", "automator", "auto", "ea" ],
 			"has_readme": true,
 			"free"      : false,
 			"submodulesync" : true
