@@ -135,7 +135,7 @@
 			"repo"      : "the-events-calendar/event-automator",
 			"name"      : "event-automator",
 			"bootstrap" : "event-automator.php",
-			"main"      : "src/Events_Automator/Plugin.php",
+			"main"      : "src/Event_Automator/Plugin.php",
 			"version"   : "VERSION",
 			"alias"     : [ "events-automator", "automator", "auto", "ea" ],
 			"has_readme": true,
