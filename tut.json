@@ -137,7 +137,7 @@
 			"bootstrap" : "event-automator.php",
 			"main"      : "src/Event_Automator/Plugin.php",
 			"version"   : "VERSION",
-			"alias"     : [ "events-automator", "automator", "auto", "ea" ],
+			"alias"     : [ "events-automator", "automator", "auto", "eva" ],
 			"has_readme": true,
 			"free"      : false,
 			"submodulesync" : true
