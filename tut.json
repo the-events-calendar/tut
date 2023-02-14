@@ -128,7 +128,7 @@
 			"version"   : "VERSION",
 			"alias"     : [ "ve", "ev" ],
 			"has_readme": true,
-			"free"      : true,
+			"free"      : false,
 			"submodulesync" : true
 		},
 		{
