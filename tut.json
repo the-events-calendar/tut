@@ -210,7 +210,7 @@
 			"name"      : "givewp",
 			"bootstrap" : "give.php",
 			"main"      : "give.php",
-			"version"   : "define('GIVE_VERSION')",
+			"version"   : "define('GIVE_VERSION', '",
 			"alias"     : [ "give" ],
 			"has_readme": true,
 			"free"      : true
