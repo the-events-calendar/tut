@@ -206,12 +206,12 @@
 			"free"      : true
 		},
 		{
-			"repo"      : "the-events-calendar/gigpress",
-			"name"      : "gigpress",
-			"bootstrap" : "gigpress.php",
-			"main"      : "gigpress.php",
-			"version"   : "define('GIGPRESS_VERSION')",
-			"alias"     : [ "gig" ],
+			"repo"      : "impress-org/givewp",
+			"name"      : "givewp",
+			"bootstrap" : "give.php",
+			"main"      : "give.php",
+			"version"   : "define('GIVE_VERSION')",
+			"alias"     : [ "give" ],
 			"has_readme": true,
 			"free"      : true
 		},
