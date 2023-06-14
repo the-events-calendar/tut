@@ -124,7 +124,7 @@
 			"repo"      : "the-events-calendar/events-virtual",
 			"name"      : "events-virtual",
 			"bootstrap" : "events-virtual.php",
-			"main"      : "src/Tribe/Plugin.php",
+			"main"      : "src/Tribe/Plugin_Register.php",
 			"version"   : "VERSION",
 			"alias"     : [ "ve", "ev" ],
 			"has_readme": true,
