@@ -1,239 +1,315 @@
 {
-	"default": {
-		"name"             : "",
-		"dir"              : "",
-		"repo"             : "",
-		"alias"            : [],
-		"css_dir"          : "src/resources/css",
-		"js_dir"           : "src/resources/js",
-		"bootstrap"        : "",
-		"changelog"        : "readme.txt",
-		"main"             : "",
-		"version"          : "VERSION",
-		"free"             : false,
-		"has_common"       : false,
-		"has_readme"       : true,
-		"has_view_versions": false,
-		"submodulesync"    : false,
-		"submodule_builds" : [],
-		"composer_build"   : "composer install --no-dev",
-		"npm_build"        : "nvm use && npm ci",
-		"zip_command"      : "nvm use && ./node_modules/.bin/gulp zip"
+	"default"             : {
+		"name"               : "",
+		"dir"                : "",
+		"repo"               : "",
+		"alias"              : [],
+		"css_dir"            : "src/resources/css",
+		"js_dir"             : "src/resources/js",
+		"bootstrap"          : "",
+		"changelog"          : "readme.txt",
+		"main"               : "",
+		"version"            : "VERSION",
+		"free"               : false,
+		"has_common"         : false,
+		"has_readme"         : true,
+		"has_view_versions"  : false,
+		"submodulesync"      : false,
+		"submodule_builds"   : [],
+		"composer_build"     : "composer install --no-dev",
+		"npm_build"          : "nvm use && npm ci",
+		"zip_command"        : "nvm use && ./node_modules/.bin/gulp zip"
 	},
-	"plugins": [
+	"plugins"             : [
 		{
-			"repo"      : "the-events-calendar/tribe-common",
-			"name"      : "tribe-common",
-			"bootstrap" : "tribe-common.php",
-			"main"      : "src/Tribe/Main.php",
-			"version"   : "VERSION",
-			"alias"     : [ "common" ],
-			"has_readme": true,
-			"free"      : true,
-			"submodulesync" : true
+			"repo"              : "the-events-calendar/tribe-common",
+			"name"              : "tribe-common",
+			"bootstrap"         : "tribe-common.php",
+			"main"              : "src/Tribe/Main.php",
+			"version"           : "VERSION",
+			"alias"             : [
+				"common"
+			],
+			"has_readme"        : true,
+			"free"              : true,
+			"submodulesync"     : true
 		},
 		{
-			"repo"          : "the-events-calendar/the-events-calendar",
-			"name"          : "the-events-calendar",
-			"bootstrap"     : "the-events-calendar.php",
-			"main"          : "src/Tribe/Main.php",
-			"version"       : "VERSION",
-			"alias"         : [ "events", "event", "tec" ],
-			"has_readme": true,
-			"free"          : true,
-			"submodulesync" : true
+			"repo"              : "the-events-calendar/the-events-calendar",
+			"name"              : "the-events-calendar",
+			"bootstrap"         : "the-events-calendar.php",
+			"main"              : "src/Tribe/Main.php",
+			"plugin_register"   : "src/Tribe/Plugin_Register.php",
+			"version"           : "VERSION",
+			"alias"             : [
+				"events",
+				"event",
+				"tec"
+			],
+			"has_readme"        : true,
+			"free"              : true,
+			"submodulesync"     : true
 		},
 		{
-			"repo"      : "the-events-calendar/events-community",
-			"name"      : "events-community",
-			"bootstrap" : "tribe-community-events.php",
-			"main"      : "src/Tribe/Main.php",
-			"version"   : "VERSION",
-			"alias"     : [ "ec", "community", "ce", "the-events-calendar-community-events" ],
-			"has_readme": true,
-			"free"      : false,
-			"submodulesync" : true
+			"repo"              : "the-events-calendar/events-community",
+			"name"              : "events-community",
+			"bootstrap"         : "tribe-community-events.php",
+			"main"              : "src/Tribe/Main.php",
+			"plugin_register"   : "src/Tribe/Plugin_Register.php",
+			"version"           : "VERSION",
+			"alias"             : [
+				"ec",
+				"community",
+				"ce",
+				"the-events-calendar-community-events"
+			],
+			"has_readme"        : true,
+			"free"              : false,
+			"submodulesync"     : true
 		},
 		{
-			"repo"      : "the-events-calendar/events-community-tickets",
-			"name"      : "events-community-tickets",
-			"bootstrap" : "events-community-tickets.php",
-			"main"      : "src/Tribe/Main.php",
-			"version"   : "VERSION",
-			"alias"     : [ "ect", "community-tickets", "ct", "the-events-calendar-community-events-tickets" ],
-			"has_readme": true,
-			"free"      : false,
-			"submodulesync" : true
+			"repo"              : "the-events-calendar/events-community-tickets",
+			"name"              : "events-community-tickets",
+			"bootstrap"         : "events-community-tickets.php",
+			"main"              : "src/Tribe/Main.php",
+			"plugin_register"   : "src/Tribe/Plugin_Register.php",
+			"version"           : "VERSION",
+			"alias"             : [
+				"ect",
+				"community-tickets",
+				"ct",
+				"the-events-calendar-community-events-tickets"
+			],
+			"has_readme"        : true,
+			"free"              : false,
+			"submodulesync"     : true
 		},
 		{
-			"repo"      : "the-events-calendar/events-eventbrite",
-			"name"      : "events-eventbrite",
-			"bootstrap" : "tribe-eventbrite.php",
-			"main"      : "src/Tribe/Main.php",
-			"version"   : "$pluginVersion|VERSION",
-			"alias"     : [ "eb", "eventbrite", "the-events-calendar-eventbrite-tickets" ],
-			"has_readme": true,
-			"free"      : false,
-			"submodulesync" : true
+			"repo"              : "the-events-calendar/events-eventbrite",
+			"name"              : "events-eventbrite",
+			"bootstrap"         : "tribe-eventbrite.php",
+			"main"              : "src/Tribe/Main.php",
+			"plugin_register"   : "src/Tribe/Plugin_Register.php",
+			"version"           : "$pluginVersion|VERSION",
+			"alias"             : [
+				"eb",
+				"eventbrite",
+				"the-events-calendar-eventbrite-tickets"
+			],
+			"has_readme"        : true,
+			"free"              : false,
+			"submodulesync"     : true
 		},
 		{
-			"repo"      : "the-events-calendar/events-filterbar",
-			"name"      : "events-filterbar",
-			"bootstrap" : "the-events-calendar-filter-view.php",
-			"main"      : "src/Tribe/View.php",
-			"version"   : "VERSION",
-			"alias"     : [ "filterbar", "the-events-calendar-filterbar" ],
-			"has_readme": true,
-			"free"      : false,
-			"submodulesync" : true
+			"repo"              : "the-events-calendar/events-filterbar",
+			"name"              : "events-filterbar",
+			"bootstrap"         : "the-events-calendar-filter-view.php",
+			"main"              : "src/Tribe/View.php",
+			"plugin_register"   : "src/Tribe/Plugin_Register.php",
+			"version"           : "VERSION",
+			"alias"             : [
+				"filterbar",
+				"the-events-calendar-filterbar"
+			],
+			"has_readme"        : true,
+			"free"              : false,
+			"submodulesync"     : true
 		},
 		{
-			"repo"      : "the-events-calendar/events-pro",
-			"name"      : "events-pro",
-			"bootstrap" : "events-calendar-pro.php",
-			"main"      : "src/Tribe/Main.php",
-			"version"   : "VERSION",
-			"alias"     : [ "ecp", "pro", "ep", "events-calendar-pro" ],
-			"has_readme": true,
-			"free"      : false,
-			"submodulesync" : true
+			"repo"              : "the-events-calendar/events-pro",
+			"name"              : "events-pro",
+			"bootstrap"         : "events-calendar-pro.php",
+			"main"              : "src/Tribe/Main.php",
+			"plugin_register"   : "src/Tribe/Plugin_Register.php",
+			"version"           : "VERSION",
+			"alias"             : [
+				"ecp",
+				"pro",
+				"ep",
+				"events-calendar-pro"
+			],
+			"has_readme"        : true,
+			"free"              : false,
+			"submodulesync"     : true
 		},
 		{
-			"repo"          : "the-events-calendar/event-tickets",
-			"name"          : "event-tickets",
-			"bootstrap"     : "event-tickets.php",
-			"main"          : "src/Tribe/Main.php",
-			"version"       : "VERSION",
-			"alias"         : [ "et", "tickets", "ticket" ],
-			"has_readme": true,
-			"free"          : true,
-			"submodulesync" : true
+			"repo"              : "the-events-calendar/event-tickets",
+			"name"              : "event-tickets",
+			"bootstrap"         : "event-tickets.php",
+			"main"              : "src/Tribe/Main.php",
+			"plugin_register"   : "src/Tribe/Plugin_Register.php",
+			"version"           : "VERSION",
+			"alias"             : [
+				"et",
+				"tickets",
+				"ticket"
+			],
+			"has_readme"        : true,
+			"free"              : true,
+			"submodulesync"     : true
 		},
 		{
-			"repo"      : "the-events-calendar/event-tickets-plus",
-			"name"      : "event-tickets-plus",
-			"bootstrap" : "event-tickets-plus.php",
-			"main"      : "src/Tribe/Main.php",
-			"version"   : "VERSION",
-			"alias"     : [ "et+", "tickets-plus", "plus" ],
-			"has_readme": true,
-			"free"      : false,
-			"submodulesync" : true
+			"repo"              : "the-events-calendar/event-tickets-plus",
+			"name"              : "event-tickets-plus",
+			"bootstrap"         : "event-tickets-plus.php",
+			"main"              : "src/Tribe/Main.php",
+			"plugin_register"   : "src/Tribe/Plugin_Register.php",
+			"version"           : "VERSION",
+			"alias"             : [
+				"et+",
+				"tickets-plus",
+				"plus"
+			],
+			"has_readme"        : true,
+			"free"              : false,
+			"submodulesync"     : true
 		},
 		{
-			"repo"      : "the-events-calendar/events-virtual",
-			"name"      : "events-virtual",
-			"bootstrap" : "events-virtual.php",
-			"main"      : "src/Tribe/Plugin.php",
-			"version"   : "VERSION",
-			"alias"     : [ "ve", "ev" ],
-			"has_readme": true,
-			"free"      : false,
-			"submodulesync" : true
+			"repo"              : "the-events-calendar/events-virtual",
+			"name"              : "events-virtual",
+			"bootstrap"         : "events-virtual.php",
+			"main"              : "src/Tribe/Plugin.php",
+			"plugin_register"   : "src/Tribe/Plugin_Register.php",
+			"version"           : "VERSION",
+			"alias"             : [
+				"ve",
+				"ev"
+			],
+			"has_readme"        : true,
+			"free"              : false,
+			"submodulesync"     : true,
+			"version_storage"   : "plugin_register"
 		},
 		{
-			"repo"      : "the-events-calendar/event-automator",
-			"name"      : "event-automator",
-			"bootstrap" : "event-automator.php",
-			"main"      : "src/Event_Automator/Plugin.php",
-			"version"   : "VERSION",
-			"alias"     : [ "events-automator", "automator", "auto", "eva" ],
-			"has_readme": true,
-			"free"      : false,
-			"submodulesync" : true
+			"repo"              : "the-events-calendar/event-automator",
+			"name"              : "event-automator",
+			"bootstrap"         : "event-automator.php",
+			"main"              : "src/Event_Automator/Plugin.php",
+			"plugin_register"   : "src/Tribe/Plugin_Register.php",
+			"version"           : "VERSION",
+			"alias"             : [
+				"events-automator",
+				"automator",
+				"auto",
+				"eva"
+			],
+			"has_readme"        : true,
+			"free"              : false,
+			"submodulesync"     : true
 		},
 		{
-			"repo"      : "stellarwp/restrict-content-pro",
-			"name"      : "restrict-content-pro",
-			"bootstrap" : "restrict-content-pro.php",
-			"main"      : "core/includes/class-restrict-content.php",
-			"version"   : "const VERSION",
-			"alias"     : [ "rcp" ],
-			"has_readme": true,
-			"free"      : false
+			"repo"              : "stellarwp/restrict-content-pro",
+			"name"              : "restrict-content-pro",
+			"bootstrap"         : "restrict-content-pro.php",
+			"main"              : "core/includes/class-restrict-content.php",
+			"version"           : "const VERSION",
+			"alias"             : [
+				"rcp"
+			],
+			"has_readme"        : true,
+			"free"              : false
 		},
 		{
-			"repo"      : "stellarwp/learndash-core",
-			"name"      : "learndash-core",
-			"changelog" : "changelog.md",
-			"bootstrap" : "sfwd_lms.php",
-			"main"      : "sfwd_lms.php",
-			"assets"    : "assets",
-			"npm_build" : "npm run install-npm-deps && npm run release",
-			"version"   : "define( 'LEARNDASH_VERSION', '",
-			"alias"     : [ "ld", "sfwd-lms", "learndash" ],
-			"has_readme": false,
-			"free"      : false
+			"repo"              : "stellarwp/learndash-core",
+			"name"              : "learndash-core",
+			"changelog"         : "changelog.md",
+			"bootstrap"         : "sfwd_lms.php",
+			"main"              : "sfwd_lms.php",
+			"assets"            : "assets",
+			"npm_build"         : "npm run install-npm-deps && npm run release",
+			"version"           : "define( 'LEARNDASH_VERSION', '",
+			"alias"             : [
+				"ld",
+				"sfwd-lms",
+				"learndash"
+			],
+			"has_readme"        : false,
+			"free"              : false
 		},
 		{
-			"repo"      : "the-events-calendar/events-elasticsearch",
-			"name"      : "events-elasticsearch",
-			"bootstrap" : "events-elasticsearch.php",
-			"main"      : "src/Tribe/Main.php",
-			"version"   : "const VERSION",
-			"alias"     : [ "elasticsearch", "es", "the-events-calendar-elasticsearch" ],
-			"has_readme": true,
-			"free"      : true
+			"repo"              : "the-events-calendar/events-elasticsearch",
+			"name"              : "events-elasticsearch",
+			"bootstrap"         : "events-elasticsearch.php",
+			"main"              : "src/Tribe/Main.php",
+			"version"           : "const VERSION",
+			"alias"             : [
+				"elasticsearch",
+				"es",
+				"the-events-calendar-elasticsearch"
+			],
+			"has_readme"        : true,
+			"free"              : true
 		},
 		{
-			"repo"      : "the-events-calendar/advanced-post-manager",
-			"name"      : "advanced-post-manager",
-			"bootstrap" : "tribe-apm.php",
-			"main"      : "tribe-apm.php",
-			"version"   : "VERSION",
-			"alias"     : [ "apm" ],
-			"has_readme": true,
-			"free"      : true
+			"repo"              : "the-events-calendar/advanced-post-manager",
+			"name"              : "advanced-post-manager",
+			"bootstrap"         : "tribe-apm.php",
+			"main"              : "tribe-apm.php",
+			"version"           : "VERSION",
+			"alias"             : [
+				"apm"
+			],
+			"has_readme"        : true,
+			"free"              : true
 		},
 		{
-			"repo"      : "the-events-calendar/image-widget-plus",
-			"name"      : "image-widget-plus",
-			"bootstrap" : "image-widget-plus.php",
-			"main"      : "src/Tribe/Main.php",
-			"version"   : "VERSION",
-			"alias"     : [ "iw+" ],
-			"has_readme": true,
-			"free"      : false
+			"repo"              : "the-events-calendar/image-widget-plus",
+			"name"              : "image-widget-plus",
+			"bootstrap"         : "image-widget-plus.php",
+			"main"              : "src/Tribe/Main.php",
+			"version"           : "VERSION",
+			"alias"             : [
+				"iw+"
+			],
+			"has_readme"        : true,
+			"free"              : false
 		},
 		{
-			"repo"      : "the-events-calendar/image-widget",
-			"name"      : "image-widget",
-			"bootstrap" : "image-widget.php",
-			"main"      : "image-widget.php",
-			"version"   : "VERSION",
-			"alias"     : [ "iw" ],
-			"has_readme": true,
-			"free"      : true
+			"repo"              : "the-events-calendar/image-widget",
+			"name"              : "image-widget",
+			"bootstrap"         : "image-widget.php",
+			"main"              : "image-widget.php",
+			"version"           : "VERSION",
+			"alias"             : [
+				"iw"
+			],
+			"has_readme"        : true,
+			"free"              : true
 		},
 		{
-			"repo"      : "impress-org/givewp",
-			"name"      : "givewp",
-			"bootstrap" : "give.php",
-			"main"      : "give.php",
-			"version"   : "define('GIVE_VERSION', '",
-			"alias"     : [ "give" ],
-			"has_readme": true,
-			"free"      : true
+			"repo"              : "impress-org/givewp",
+			"name"              : "givewp",
+			"bootstrap"         : "give.php",
+			"main"              : "give.php",
+			"version"           : "define('GIVE_VERSION', '",
+			"alias"             : [
+				"give"
+			],
+			"has_readme"        : true,
+			"free"              : true
 		},
 		{
-			"repo"      : "the-events-calendar/loxi-event-calendar",
-			"name"      : "loxi-event-calendar",
-			"bootstrap" : "loxi-event-calendar.php",
-			"main"      : "src/Tribe/Main.php",
-			"version"   : "const VERSION",
-			"alias"     : [ "lec", "loxi-plugin" ],
-			"has_readme": true,
-			"free"      : true
+			"repo"              : "the-events-calendar/loxi-event-calendar",
+			"name"              : "loxi-event-calendar",
+			"bootstrap"         : "loxi-event-calendar.php",
+			"main"              : "src/Tribe/Main.php",
+			"version"           : "const VERSION",
+			"alias"             : [
+				"lec",
+				"loxi-plugin"
+			],
+			"has_readme"        : true,
+			"free"              : true
 		}
 	],
-	"submodules": [
+	"submodules"          : [
 		{
-			"name": "tribe-common-styles",
-			"path": "src/resources/postcss/utilities"
+			"name"              : "tribe-common-styles",
+			"path"              : "src/resources/postcss/utilities"
 		},
 		{
-			"name": "tribe-common",
-			"path": "common"
+			"name"              : "tribe-common",
+			"path"              : "common"
 		}
 	]
 }

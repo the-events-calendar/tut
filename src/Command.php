@@ -118,8 +118,10 @@ class Command extends \Symfony\Component\Console\Command\Command {
 	}
 
 	public function get_plugin( $search ) {
+		$plugins_unfiltered = array_map( [ $this, 'apply_plugin_default_args' ], $this->config->plugins );
+
 		if ( ! is_string( $search ) ) {
-			$plugins = __::where( $this->config->plugins, $search );
+			$plugins = __::where( $plugins_unfiltered, $search );
 			if ( ! empty( $plugins ) ) {
 				return reset( $plugins );
 			}
@@ -127,14 +129,14 @@ class Command extends \Symfony\Component\Console\Command\Command {
 			return null;
 		}
 
-		$plugins = __::where( $this->config->plugins, [ 'name' => $search ] );
+		$plugins = __::where( $plugins_unfiltered, [ 'name' => $search ] );
 		if ( ! empty( $plugins ) ) {
 			return (object) reset( $plugins );
 		}
 
 		$plugins = array_filter(
-			$this->config->plugins,
-			function ( $plugin ) use ( $search ) {
+			$plugins_unfiltered,
+			static function ( $plugin ) use ( $search ) {
 				return in_array( $search, (array) $plugin['alias'], true );
 			}
 		);
@@ -144,6 +146,64 @@ class Command extends \Symfony\Component\Console\Command\Command {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Given a Plugin Object, we determine what is the version storage file path.
+	 *
+	 * @since TBD
+	 *
+	 * @param mixed $plugin An object of the plugin, based on tut.json structure.
+	 *
+	 * @return null|string
+	 */
+	protected function get_plugin_version_storage_file_path( $plugin ) {
+		if ( ! $plugin ) {
+			return null;
+		}
+
+		if ( ! is_object( $plugin ) ) {
+			return null;
+		}
+
+		if ( empty( $plugin->version_storage ) ) {
+			return null;
+		}
+
+		switch ( $plugin->version_storage ) {
+			case 'plugin_register':
+				return $plugin->plugin_register ?: null;
+			case 'main':
+			default:
+				return $plugin->main ?: null;
+		}
+	}
+
+	/**
+	 * Given a Plugin array data, apply the defaults so we dont have to check before using them.
+	 *
+	 * @since TBD
+	 *
+	 * @param array $plugin
+	 *
+	 * @return array
+	 */
+	protected function apply_plugin_default_args( array $plugin ): array {
+		$default_args = [
+			'repo' => null,
+			'name' => null,
+			'bootstrap' => null,
+			'main' => null,
+			'plugin_register' => null,
+			'version' => null,
+			'alias' => [],
+			'has_readme' => true,
+			'free' => false,
+			'submodulesync' => true,
+			'version_storage' => 'main',
+		];
+
+		return array_merge( $default_args, $plugin );
 	}
 
 	/**

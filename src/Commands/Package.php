@@ -298,27 +298,26 @@ class Package extends Command {
 
 			$bootstrap_file = file_get_contents( $plugin->bootstrap );
 
-			if ( ! empty( $plugin->main ) ) {
-				$main_file    = file_get_contents( $plugin->main );
-				$main_version = null;
+			$version_storage_file_path = $this->get_plugin_version_storage_file_path( $plugin );
 
-				// grab the main file's version if possible
-				if ( isset( $plugin->version ) ) {
-					preg_match( '/.*' . $plugin->version . "[^']*'([^']*)'.*/", $main_file, $matches );
-					$main_version = $matches[1];
-				}
+			if ( ! empty( $version_storage_file_path ) ) {
+				$version_storage_file_contents    = file_get_contents( $version_storage_file_path );
+				$stored_plugin_version = null;
+
+				preg_match( '/.*' . $plugin->version . "[^']*'([^']*)'.*/", $version_storage_file_contents, $matches );
+				$stored_plugin_version = $matches[1];
 			}
 
 			// grab the version from the bootstrap file
 			preg_match( '/.*Version\:\s*([0-9a-zA-Z.-]*).*/', $bootstrap_file, $matches );
 			$bootstrap_version = $matches[1];
 
-			if ( empty( $plugin->main ) ) {
+			if ( empty( $version_storage_file_path ) ) {
 				// if a version wasn't passed in via --release, default to the bootstrap file's version number
-				$main_version = $version = $version_option ?: $bootstrap_version;
+				$stored_plugin_version = $version = $version_option ?: $bootstrap_version;
 			} else {
 				// if a version wasn't passed in via --release, default to the Main file's version number
-				$version = $version_option ?: $main_version;
+				$version = $version_option ?: $stored_plugin_version;
 			}
 
 			$process     = $this->run_process( 'git rev-parse --short=8 HEAD', false );
@@ -384,14 +383,14 @@ class Package extends Command {
 				}
 			}
 
-			if ( isset( $plugin->version ) && $main_version !== $version ) {
+			if ( isset( $plugin->version ) && $stored_plugin_version !== $version ) {
 				if ( $this->final ) {
-					$error = "Attempting to package version {$version} but the VERSION constant is {$main_version} in {$plugin->main}";
+					$error = "Attempting to package version {$version} but the VERSION constant is {$stored_plugin_version} in {$version_storage_file_path}";
 
 					$this->error_and_skip( $error, $plugin );
 					continue;
 				} else {
-					$this->package_notes[ $plugin->name ][] = " ({$plugin->main} version is {$main_version})";
+					$this->package_notes[ $plugin->name ][] = " ({$version_storage_file_path} version is {$stored_plugin_version})";
 				}
 			}
 
@@ -545,16 +544,15 @@ class Package extends Command {
 				// Modified the Original Bootstrap file with the new content
 				file_put_contents( $plugin->bootstrap, $file_contents );
 
-				if ( ! empty( $main_file ) ) {
-					// Find what to modify on the Main Class file
-					$file_contents = $main_file;
+				// Which file needs to be modified for version storage.
+				$modify_version_file          = $this->get_plugin_version_storage_file_path( $plugin );
+				$modify_version_file_contents = file_get_contents( $modify_version_file );
 
-					$regexp        = "/([\t ]+)({$plugin->version})( += +)(\'[^']+)/";
-					$file_contents = preg_replace( $regexp, '$1$2$3$4-dev-' . $build_number . '-' . $plugin_hash, $file_contents );
+				$regexp        = "/([\t ]+)({$plugin->version})( += +)(\'[^']+)/";
+				$modify_version_file_contents = preg_replace( $regexp, '$1$2$3$4-dev-' . $build_number . '-' . $plugin_hash, $modify_version_file_contents );
 
-					// Modified the class Main File
-					file_put_contents( $plugin->main, $file_contents );
-				}
+				// Modified the class Main File
+				file_put_contents( $modify_version_file, $modify_version_file_contents );
 			}
 
 			chdir( $plugin_dir );

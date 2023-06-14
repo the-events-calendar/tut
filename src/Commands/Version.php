@@ -28,10 +28,10 @@ class Version extends Command {
 		parent::configure();
 
 		$this->setName( 'version' )
-		     ->setDescription( 'Sets the release version on our plugins.' )
-		     ->setHelp( 'This command allows you to set and check the plugin versions and requirements in the relevant files.' )
-		     ->addArgument( 'version', InputArgument::OPTIONAL, 'The version that\'s being prepared.', false )
-		     ->addArgument( 'branch', InputArgument::OPTIONAL, 'The branch in which the version is being prepared.', false );
+			->setDescription( 'Sets the release version on our plugins.' )
+			->setHelp( 'This command allows you to set and check the plugin versions and requirements in the relevant files.' )
+			->addArgument( 'version', InputArgument::OPTIONAL, 'The version that\'s being prepared.', false )
+			->addArgument( 'branch', InputArgument::OPTIONAL, 'The branch in which the version is being prepared.', false );
 	}
 
 	protected function interact( InputInterface $input, OutputInterface $output ) {
@@ -59,8 +59,8 @@ class Version extends Command {
 			return;
 		}
 
-		$this->version = $this->version ?: $input->getArgument( 'version' );
-		$this->branch  = $this->branch ?:  $input->getArgument( 'branch' );
+		$this->version = $this->version ? : $input->getArgument( 'version' );
+		$this->branch  = $this->branch ? : $input->getArgument( 'branch' );
 
 		$required_tec_version         = null;
 		$required_tec_version_for_all = null;
@@ -82,6 +82,9 @@ class Version extends Command {
 			// cd into the plugin directory
 			chdir( $plugin_dir );
 
+			/**
+			 * This whole section is somewhat deprecated we no longer use these variables to determine dependencies
+			 */
 			if ( 'the-events-calendar' === $plugin->name ) {
 				$file = file_get_contents( 'src/Tribe/Main.php' );
 				preg_match( "/const\s+MIN_ADDON_VERSION\s*\=\s*'([^']*).*/", $file, $matches );
@@ -129,15 +132,12 @@ class Version extends Command {
 					$minimum_version = $this->ask_for_string(
 						'What should the minimum required Event Tickets version be set to?', $required_tec_version
 					);
-					$file            = preg_replace(
-						"/(const\s+REQUIRED_TICKETS_VERSION\s*\=\s*')[^']*(.*)/", '${1}' . $minimum_version
-						                                                          . '${2}', $file
-					);
+					$file            = preg_replace( "/(const\s+REQUIRED_TICKETS_VERSION\s*\=\s*')[^']*(.*)/", '${1}' . $minimum_version . '${2}', $file );
 					file_put_contents( 'src/Tribe/Main.php', $file );
 				}
 			} else {
 				if ( ! $required_tec_version_for_all
-				     && $this->ask_for_confirmation(
+					&& $this->ask_for_confirmation(
 						'Do you wish to update the required TEC version?'
 					)
 				) {
@@ -153,28 +153,15 @@ class Version extends Command {
 				}
 			}
 
-			$main_file = $plugin->main;
-			if ( file_exists( $main_file ) ) {
-				$file = file_get_contents( $main_file );
-
-				if ( null !== $required_tec_version ) {
-					$file = preg_replace(
-						"/(\$this-\>requiredTecVersion\s*\=\s*')[^']*(.*)/",
-						'${1}' . $required_tec_version . '${2}',
-						$file
-					);
-					$file = preg_replace(
-						"/(const\s+REQUIRED_TEC_VERSION\s*\=\s*')[^']*(.*)/",
-						'${1}' . $required_tec_version . '${2}',
-						$file
-					);
-				}
+			$version_storage_file = $this->get_plugin_version_storage_file_path( $plugin );
+			if ( file_exists( $version_storage_file ) ) {
+				$file = file_get_contents( $version_storage_file );
 
 				$file = preg_replace( "/(const\s+VERSION\s*\=\s*')[^']*(.*)/", '${1}' . $this->version . '${2}', $file );
 				$file = preg_replace( "/(pluginVersion\s*\=\s*')[^']*(.*)/", '${1}' . $this->version . '${2}', $file );
 				$file = preg_replace( "/(this-\>currentVersion\s*\=\s*')[^']*(.*)/", '${1}' . $this->version . '${2}', $file );
 
-				file_put_contents( $main_file, $file );
+				file_put_contents( $version_storage_file, $file );
 			}
 
 			if ( file_exists( 'package.json' ) ) {
@@ -209,6 +196,5 @@ class Version extends Command {
 		$output->writeln( '<info>-------------------</info>' );
 		$this->io->success( 'DONE' );
 	}
-
 
 }
