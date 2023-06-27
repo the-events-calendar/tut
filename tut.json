@@ -210,7 +210,7 @@
 			"name"      : "memberdash",
 			"bootstrap" : "memberdash.php",
 			"main"      : "memberdash.php",
-			"version"   : "define('MEMBERDASH_VERSION', '",
+			"version"   : "define( 'MEMBERDASH_VERSION', '",
 			"alias"     : [ "md" ],
 			"has_readme": true,
 			"free"      : false
