@@ -56,7 +56,7 @@ class SvnTag extends Command {
 	 * @since 1.2.8
 	 */
 	protected function execute( InputInterface $input, OutputInterface $output ) {
-		$memory_limit        = $input->getOption( 'memory_limit' );
+		$memory_limit = $input->getOption( 'memory_limit' );
 		@ini_set( 'memory_limit', $memory_limit );
 
 		$id              = date( 'Y-m-d-H-m-s' ) . '-' . substr( uniqid(), 0, 12 );
@@ -259,7 +259,7 @@ class SvnTag extends Command {
 
 		return [
 			'deleted' => array_values( $removed_from_source ),  // Re-index the array
-			'added' => array_values( $added_in_source ),    // Re-index the array
+			'added'   => array_values( $added_in_source ),    // Re-index the array
 		];
 	}
 }
