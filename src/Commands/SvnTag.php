@@ -9,6 +9,9 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class SvnTag extends Command {
+	protected ?InputInterface $input;
+	protected ?OutputInterface $output;
+
 	/**
 	 * @since 1.2.8
 	 *
@@ -42,12 +45,28 @@ class SvnTag extends Command {
 			->setName( 'svn:tag' )
 			->setDescription( 'Creates a new SVN tag and applies changes from a ZIP file.' )
 			->setHelp( 'This command allows you to create a new SVN tag from an existing tag and apply changes from a ZIP file.' )
-			->addArgument( 'plugin', InputArgument::REQUIRED, 'The URL of the SVN repository.' )
+			->addArgument( 'plugin', InputArgument::REQUIRED, 'The slug of the Plugin on WordPress.org.' )
 			->addArgument( 'source_tag', InputArgument::REQUIRED, 'The SVN tag to be copied.' )
 			->addArgument( 'destination_tag', InputArgument::REQUIRED, 'The new SVN tag.' )
 			->addOption( 'zip_url', 'z', InputOption::VALUE_OPTIONAL, 'The URL of the ZIP file with changes to apply.' )
 			->addOption( 'temp_dir', 't', InputOption::VALUE_OPTIONAL, 'The temporary directory to use.', $temp_dir )
 			->addOption( 'memory_limit', 'm', InputOption::VALUE_OPTIONAL, 'How much memory we clear for usage, since some of the operations can be expensive.', '512M' );
+	}
+
+	protected function get_input(): InputInterface {
+		return $this->input;
+	}
+
+	protected function set_input( InputInterface $input ): void {
+		$this->input = $input;
+	}
+
+	protected function set_output( OutputInterface $output ): void {
+		$this->output = $output;
+	}
+
+	protected function get_output(): OutputInterface {
+		return $this->output;
 	}
 
 	/**
@@ -56,6 +75,9 @@ class SvnTag extends Command {
 	 * @since 1.2.8
 	 */
 	protected function execute( InputInterface $input, OutputInterface $output ) {
+		$this->set_input( $input );
+		$this->set_output( $output );
+
 		$memory_limit = $input->getOption( 'memory_limit' );
 		@ini_set( 'memory_limit', $memory_limit );
 
@@ -83,16 +105,37 @@ class SvnTag extends Command {
 
 		$plugin_dir = $temp_dir . '/plugin/';
 
-		// Create temporary directory if it doesn't exist
-		if ( ! is_dir( $temp_dir ) ) {
-			$output->writeln( 'Temporary directory does not exist. Creating: ' . $temp_dir );
-			mkdir( $temp_dir, 0755, true );
+		if ( file_exists( $temp_dir ) ) {
+			$output->writeln( 'Temporary directory already exists: ' . $temp_dir );
+			shell_exec( "rm -rf {$temp_dir}" );
+
+			if ( file_exists( $temp_dir ) ) {
+				return $this->cleanup_to_error( "Couldn't cleanup the temporary directory, aborting." );
+			}
 		}
 
-		// Ensure the plugin extraction dir is empty before doing anything.
+		$output->writeln( 'Creating temporary working directory: ' . $temp_dir );
+		mkdir( $temp_dir, 0755, true );
+
+		if ( ! file_exists( $temp_dir ) ) {
+			return $this->cleanup_to_error( "Couldn't create the temporary directory, aborting." );
+		}
+
+		// If the plugin extraction dir exists, delete it and recreate it.
 		if ( file_exists( $plugin_dir ) ) {
+			$output->writeln( 'Plugin storage directory already exists: ' . $plugin_dir );
 			shell_exec( "rm -rf {$plugin_dir}" );
-			mkdir( $plugin_dir, 0755, true );
+
+			if ( file_exists( $plugin_dir ) ) {
+				return $this->cleanup_to_error( "Couldn't cleanup the plugin storage directory, aborting." );
+			}
+		}
+
+		$output->writeln( 'Creating plugin storage directory: ' . $plugin_dir );
+		mkdir( $plugin_dir, 0755, true );
+
+		if ( ! file_exists( $plugin_dir ) ) {
+			return $this->cleanup_to_error( "Couldn't create the plugin storage directory, aborting." );
 		}
 
 		// Download and extract ZIP file to temporary directory
@@ -101,6 +144,9 @@ class SvnTag extends Command {
 		// just to make sure we can download the new file.
 		if ( file_exists( $zip_file ) && is_file( $zip_file ) ) {
 			unlink( $zip_file );
+			if ( file_exists( $zip_file ) ) {
+				return $this->cleanup_to_error( "Couldn't delete the existing zip, aborting." );
+			}
 		}
 
 		$output->writeln( 'Downloading ZIP file to: ' . $zip_file );
@@ -261,5 +307,24 @@ class SvnTag extends Command {
 			'deleted' => array_values( $removed_from_source ),  // Re-index the array
 			'added'   => array_values( $added_in_source ),    // Re-index the array
 		];
+	}
+
+	protected function cleanup_to_error( string $message = null ): int {
+
+		$this->cleanup();
+
+		$this->get_output()->writeln( $message );
+		return self::CMD_FAILURE;
+	}
+
+	protected function cleanup_to_success( string $message = null ): int {
+		$this->cleanup();
+
+		$this->get_output()->writeln( $message );
+		return self::CMD_SUCCESS;
+	}
+
+	protected function cleanup() {
+
 	}
 }
