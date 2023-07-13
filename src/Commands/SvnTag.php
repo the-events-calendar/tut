@@ -134,9 +134,7 @@ class SvnTag extends Command {
         $output->writeln( "Move the ZIP version of the destination tag to the correct folder: \n" . $move_cmd );
         shell_exec( $move_cmd );
 
-        // Here we specifically invert, since we are using Rsync to test we are
-        // trying to copy the destination folder to the source folder in the comparison.
-        $scan = $this->compare_directories( $destination_tag_folder, $source_tag_folder );
+        $scan = $this->compare_directories( $source_tag_folder, $destination_tag_folder );
 
         $output->writeln( "Comparing Directories:" );
         $output->writeln( " - $source_tag_folder" );
