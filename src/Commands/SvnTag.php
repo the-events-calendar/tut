@@ -9,12 +9,32 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class SvnTag extends Command {
+	/**
+	 * @since 1.2.8
+	 *
+	 * @var int The exit code to use when the command succeeds.
+	 */
 	protected const CMD_SUCCESS = 0;
 
+	/**
+	 * @since 1.2.8
+	 *
+	 * @var int The exit code to use when the command fails.
+	 */
 	protected const CMD_FAILURE = 1;
 
+	/**
+	 * @since 1.2.8
+	 *
+	 * @var string Store the base URL for the WordPress.org SVN repository.
+	 */
 	protected const WP_ORG_URL = 'https://plugins.svn.wordpress.org/';
 
+	/**
+	 * Configures the command.
+	 *
+	 * @since 1.2.8
+	 */
 	protected function configure() {
 		$temp_dir = '/tmp/svn-tag/';
 
@@ -30,6 +50,11 @@ class SvnTag extends Command {
 			->addOption( 'memory_limit', 'm', InputOption::VALUE_OPTIONAL, 'How much memory we clear for usage, since some of the operations can be expensive.', '512M' );
 	}
 
+	/**
+	 * Executes the command.
+	 *
+	 * @since 1.2.8
+	 */
 	protected function execute( InputInterface $input, OutputInterface $output ) {
 		$memory_limit        = $input->getOption( 'memory_limit' );
 		@ini_set( 'memory_limit', $memory_limit );
@@ -206,6 +231,8 @@ class SvnTag extends Command {
 
 	/**
 	 * Compare two directories and return an array of added and deleted files.
+	 *
+	 * @since 1.2.8
 	 *
 	 * @param string $source      Directory A.
 	 * @param string $destination Directory B.

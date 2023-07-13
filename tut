@@ -4,7 +4,7 @@
 require dirname( __FILE__ ) . '/vendor/autoload.php';
 
 define( '__TUT_DIR__', __DIR__ );
-define( 'TUT_VERSION', '1.2.7' );
+define( 'TUT_VERSION', '1.2.8' );
 
 use Symfony\Component\Console\Application;
 use TUT\Commands;
