@@ -146,27 +146,37 @@ class SvnTag extends Command {
         }
 
         if ( ! empty( $scan['added'] ) ) {
+			$output->writeln( '' );
+
             $output->writeln( "Added files: \n - " . implode( "\n - ", $scan['added'] ) );
 
-            $output->writeln( "Including all added files from destination Tag folder:  \n" );
+			$output->writeln( '' );
+
+            $output->writeln( "Including all added files from destination Tag folder: " );
             foreach ( $scan['added'] as $file ) {
-                $add_cmd = "svn add tags/{$destination_tag}/{$file}";
-                $output->writeln( $add_cmd);
+                $add_cmd = "svn add --parents tags/{$destination_tag}/{$file}";
+                $output->writeln( $add_cmd );
                 shell_exec( $cd_to_repo_cmd . $add_cmd );
             }
         }
 
         if ( ! empty( $scan['deleted'] ) ) {
+			$output->writeln( '' );
+
             $output->writeln( "Deleted files: \n - " . implode( "\n - ", $scan['deleted'] ) );
 
+			$output->writeln( '' );
+
             // Remove deleted files
-            $output->writeln( "Deleting all removed files from destination Tag folder:  \n" );
+            $output->writeln( "Deleting all removed files from destination Tag folder:" );
             foreach ( $scan['deleted'] as $file ) {
                 $remove_cmd = "svn rm tags/{$destination_tag}/{$file}";
                 $output->writeln( $remove_cmd );
                 shell_exec( $cd_to_repo_cmd . $remove_cmd );
             }
         }
+
+		$output->writeln( '' );
 
         // Commit changes
         $commit_cmd = "svn commit tags/{$destination_tag} -m 'Apply modifications to {$destination_tag}'";
@@ -211,38 +221,17 @@ class SvnTag extends Command {
             return null;
         }
 
-        // Execute rsync command
-        $command = "rsync --dry-run --itemize-changes --recursive $source $destination | grep '^\\(.d.........\\|>f+++++++++\\)' | awk '{print $2}'";
-        exec( $command, $output );
+        // Execute rsync command to check for added files.
+        $command = "rsync --dry-run --itemize-changes --recursive --ignore-existing {$destination}/ {$source}/ | grep '>f+' | awk '{print \$2}'";
+        exec( $command, $added_in_source );
 
-        // Separate added and deleted files
-        $added_files = array_filter( $output, function( $file ) use ( $destination ) {
-            return strpos( $file, $destination ) === 0;
-        });
-
-        $deleted_files = array_diff( $output, $added_files );
-
-        // Remove directory from file paths
-        $source = addcslashes( $source, ' ' ); // add slashes to spaces
-        $destination = addcslashes( $destination, ' ' ); // add slashes to spaces
-
-        $deleted_files = array_map(
-            function( $file ) use ( $source ) {
-                return str_replace( "$source", '', $file );
-            },
-            $deleted_files
-        );
-
-        $added_files   = array_map(
-            function( $file ) use ( $destination ) {
-                return str_replace( "$destination", '', $file );
-            },
-            $added_files
-        );
+        // Execute rsync command to check for deleted files.
+        $command = "rsync --dry-run --itemize-changes --recursive --ignore-existing {$source}/ {$destination}/ | grep '>f+' | awk '{print \$2}'";
+        exec( $command, $removed_from_source );
 
         return [
-            'deleted' => array_values( $deleted_files ),  // Re-index the array
-            'added'   => array_values( $added_files ),    // Re-index the array
+            'deleted' => array_values( $removed_from_source ),  // Re-index the array
+            'added'   => array_values( $added_in_source ),    // Re-index the array
         ];
     }
 }
