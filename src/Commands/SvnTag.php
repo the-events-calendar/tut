@@ -26,11 +26,13 @@ class SvnTag extends Command {
 			->addArgument( 'source_tag', InputArgument::REQUIRED, 'The SVN tag to be copied.' )
 			->addArgument( 'destination_tag', InputArgument::REQUIRED, 'The new SVN tag.' )
 			->addOption( 'zip_url', 'z', InputOption::VALUE_OPTIONAL, 'The URL of the ZIP file with changes to apply.' )
-			->addOption( 'temp_dir', 't', InputOption::VALUE_OPTIONAL, 'The temporary directory to use.', $temp_dir );
+			->addOption( 'temp_dir', 't', InputOption::VALUE_OPTIONAL, 'The temporary directory to use.', $temp_dir )
+			->addOption( 'memory_limit', 'm', InputOption::VALUE_OPTIONAL, 'How much memory we clear for usage, since some of the operations can be expensive.', '512M' );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ) {
-		@ini_set( 'memory_limit', '2048M' );
+		$memory_limit        = $input->getOption( 'memory_limit' );
+		@ini_set( 'memory_limit', $memory_limit );
 
 		$id              = date( 'Y-m-d-H-m-s' ) . '-' . substr( uniqid(), 0, 12 );
 		$plugin          = $input->getArgument( 'plugin' );
