@@ -9,11 +9,67 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class SvnTag extends Command {
+	/**
+	 * Stores the input interface.
+	 *
+	 * @since 1.2.8
+	 *
+	 * @var InputInterface|null
+	 */
 	protected ?InputInterface $input;
+
+	/**
+	 * Stores the output interface.
+	 *
+	 * @since 1.2.8
+	 *
+	 * @var OutputInterface|null
+	 */
 	protected ?OutputInterface $output;
+
+	/**
+	 * Stores the command steps to cleanup.
+	 *
+	 * @since 1.2.8
+	 *
+	 * @var array
+	 */
+	protected array $cleanup_steps = [];
+
+	/**
+	 * Stores the temporary directory to use.
+	 *
+	 * @since 1.2.8
+	 *
+	 * @var string|null
+	 */
 	protected ?string $temp_dir;
+
+	/**
+	 * Stores the plugin slug.
+	 *
+	 * @since 1.2.8
+	 *
+	 * @var string|null
+	 */
 	protected ?string $plugin_slug;
+
+	/**
+	 * Stores the source tag.
+	 *
+	 * @since 1.2.8
+	 *
+	 * @var string|null
+	 */
 	protected ?string $source_tag;
+
+	/**
+	 * Stores the destination tag.
+	 *
+	 * @since 1.2.8
+	 *
+	 * @var string|null
+	 */
 	protected ?string $destination_tag;
 
 	/**
@@ -57,54 +113,154 @@ class SvnTag extends Command {
 			->addOption( 'memory_limit', 'm', InputOption::VALUE_OPTIONAL, 'How much memory we clear for usage, since some of the operations can be expensive.', '512M' );
 	}
 
+	protected function has_cleanup_step( string $step ): bool {
+		return in_array( $step, $this->get_cleanup_steps(), true );
+	}
+
+	protected function get_cleanup_steps(): array {
+		return $this->cleanup_steps;
+	}
+
+	protected function include_cleanup_step( string $step ): void {
+		$allowed_steps = [
+			'remove_temp_dir',
+			'remove_remote_destination_tag',
+		];
+
+		if ( ! in_array( $step, $allowed_steps, true ) ) {
+			return;
+		}
+
+		$this->cleanup_steps[] = $step;
+	}
+
+	/**
+	 * Gets the input interface.
+	 *
+	 * @since 1.2.8
+	 *
+	 * @return InputInterface The input interface.
+	 */
 	protected function get_input(): InputInterface {
 		return $this->input;
 	}
 
+	/**
+	 * Sets the input interface.
+	 *
+	 * @since 1.2.8
+	 */
 	protected function set_input( InputInterface $input ): void {
 		$this->input = $input;
 	}
 
+	/**
+	 * Sets the output interface.
+	 *
+	 * @since 1.2.8
+	 */
 	protected function set_output( OutputInterface $output ): void {
 		$this->output = $output;
 	}
 
+	/**
+	 * Gets the output interface.
+	 *
+	 * @since 1.2.8
+	 *
+	 * @return OutputInterface The output interface.
+	 */
 	protected function get_output(): OutputInterface {
 		return $this->output;
 	}
 
+	/**
+	 * Sets the temporary directory.
+	 *
+	 * @since 1.2.8
+	 */
 	protected function set_temp_dir( string $dir ): void {
 		$this->temp_dir = $dir;
 	}
 
+	/**
+	 * Gets the temporary directory.
+	 *
+	 * @since 1.2.8
+	 *
+	 * @return string The temporary directory.
+	 */
 	protected function get_temp_dir(): string {
 		return $this->temp_dir;
 	}
 
+	/**
+	 * Sets the plugin slug.
+	 *
+	 * @since 1.2.8
+	 */
 	protected function set_plugin_slug( string $plugin_slug ): void {
 		$this->plugin_slug = $plugin_slug;
 	}
 
+	/**
+	 * Gets the plugin slug.
+	 *
+	 * @since 1.2.8
+	 *
+	 * @return string The plugin slug.
+	 */
 	protected function get_plugin_slug(): string {
 		return $this->plugin_slug;
 	}
 
+	/**
+	 *
+	 *
+	 * @since 1.2.8
+	 */
 	protected function set_destination_tag( string $tag ): void {
 		$this->destination_tag = $tag;
 	}
 
+	/**
+	 * Gets the destination tag.
+	 *
+	 * @since 1.2.8
+	 *
+	 * @return string The destination tag.
+	 */
 	protected function get_destination_tag(): string {
 		return $this->destination_tag;
 	}
 
+	/**
+	 * Sets the source tag.
+	 *
+	 * @since 1.2.8
+	 */
 	protected function set_source_tag( string $tag ): void {
 		$this->source_tag = $tag;
 	}
 
+	/**
+	 * Gets the source tag.
+	 *
+	 * @since 1.2.8
+	 *
+	 * @return string The source tag.
+	 */
 	protected function get_source_tag(): string {
 		return $this->source_tag;
 	}
 
+	/**
+	 * Gets the URL for the plugin on WordPress.org.
+	 *
+	 * @since 1.2.8
+	 *
+	 * @return string The URL for the plugin on WordPress.org.
+	 */
 	protected function get_svn_url(): string {
 		return self::WP_ORG_URL . $this->get_plugin_slug();
 	}
@@ -132,11 +288,11 @@ class SvnTag extends Command {
 
 		$this->set_temp_dir( $temp_dir );
 		$this->set_source_tag( $source_tag );
-		$this->set_destination_tag( $plugin );
-		$this->set_plugin_slug( $destination_tag );
+		$this->set_destination_tag( $destination_tag );
+		$this->set_plugin_slug( $plugin );
 
 		$local_repo = "{$temp_dir}/repo";
-		$svn_url = self::WP_ORG_URL . $plugin;
+		$svn_url    = self::WP_ORG_URL . $plugin;
 
 		// Log the arguments and options
 		$output->writeln( 'Plugin: ' . $plugin );
@@ -163,6 +319,10 @@ class SvnTag extends Command {
 		if ( ! file_exists( $temp_dir ) ) {
 			return $this->cleanup_to_error( "Couldn't create the temporary directory, aborting." );
 		}
+
+		// From this moment forward we need to cleanup, so we catch an interrupt signal.
+		$this->catch_cli_exit_signals();
+		$this->include_cleanup_step( 'remove_temp_dir' );
 
 		// If the plugin extraction dir exists, delete it and recreate it.
 		if ( file_exists( $plugin_dir ) ) {
@@ -222,6 +382,8 @@ class SvnTag extends Command {
 		$output->writeln( "Executing SVN Command:  \n" . $copy_cmd );
 		shell_exec( $copy_cmd );
 
+		$this->include_cleanup_step( 'remove_remote_destination_tag' );
+
 		// Update local repository
 		$update_cmd = "svn update tags/{$destination_tag}";
 		$output->writeln( "Executing SVN Command: \n" . $update_cmd );
@@ -232,11 +394,11 @@ class SvnTag extends Command {
 		$destination_tag_folder = "{$local_repo}/tags/{$destination_tag}";
 
 		if ( ! file_exists( $source_tag_folder ) || ! is_dir( $source_tag_folder ) ) {
-			return $this->cleanup_to_error( "The source tag was not downloaded properly, aborting.", true );
+			return $this->cleanup_to_error( "The source tag was not downloaded properly, aborting." );
 		}
 
 		if ( ! file_exists( $destination_tag_folder ) || ! is_dir( $destination_tag_folder ) ) {
-			return $this->cleanup_to_error( "The destination tag was not downloaded properly, aborting.", true );
+			return $this->cleanup_to_error( "The destination tag was not downloaded properly, aborting." );
 		}
 
 		// Delete tag folder
@@ -256,7 +418,7 @@ class SvnTag extends Command {
 		$output->writeln( " - $destination_tag_folder" );
 
 		if ( null === $scan ) {
-			return $this->cleanup_to_error( "Error while trying to compare folders.", true );
+			return $this->cleanup_to_error( "Error while trying to compare folders." );
 		}
 
 		if ( ! empty( $scan['added'] ) ) {
@@ -346,18 +508,36 @@ class SvnTag extends Command {
 
 		return [
 			'deleted' => array_values( $removed_from_source ),  // Re-index the array
-			'added'   => array_values( $added_in_source ),    // Re-index the array
+			'added' => array_values( $added_in_source ),    // Re-index the array
 		];
 	}
 
-	protected function cleanup_to_error( string $message = null, bool $remote_destination_tag = false ): int {
+	/**
+	 * Cleanup the workspace and return error.
+	 *
+	 * @since 1.2.8
+	 *
+	 * @param string|null $message
+	 *
+	 * @return int
+	 */
+	protected function cleanup_to_error( string $message = null ): int {
 
-		$this->cleanup( $remote_destination_tag );
+		$this->cleanup();
 
 		$this->get_output()->writeln( $message );
 		return self::CMD_FAILURE;
 	}
 
+	/**
+	 * Cleanup the workspace and return success.
+	 *
+	 * @since 1.2.8
+	 *
+	 * @param string|null $message
+	 *
+	 * @return int
+	 */
 	protected function cleanup_to_success( string $message = null ): int {
 		$this->cleanup();
 
@@ -365,18 +545,53 @@ class SvnTag extends Command {
 		return self::CMD_SUCCESS;
 	}
 
-	protected function cleanup( bool $remote_destination_tag = false ) {
-		$temp_dir = $this->get_temp_dir();
+	/**
+	 * Cleanup the workspace.
+	 *
+	 * @since 1.2.8
+	 */
+	protected function cleanup() {
+		if ( $this->has_cleanup_step( 'remove_temp_dir' ) ) {
+			$temp_dir = $this->get_temp_dir();
 
-		$this->get_output()->writeln( 'Deleting temporary files to cleanup workspace.' );
-		shell_exec( "rm -rf {$temp_dir}" );
+			$this->get_output()->writeln( 'Deleting temporary files to cleanup workspace.' );
+			shell_exec( "rm -rf {$temp_dir}" );
+		}
 
-		if ( $remote_destination_tag ) {
-			$svn_url = $this->get_svn_url();
+		if ( $this->has_cleanup_step( 'remove_remote_destination_tag' ) ) {
+			$svn_url         = $this->get_svn_url();
 			$destination_tag = $this->get_destination_tag();
 
 			$this->get_output()->writeln( "Deleting remote tag '{$destination_tag}'." );
 			shell_exec( "svn rm {$svn_url}/tags/{$destination_tag} -m 'Delete remote tag {$destination_tag}.'" );
+		}
+	}
+
+	/**
+	 * Catch CLI exit signals.
+	 *
+	 * @since 1.2.8
+	 */
+	protected function catch_cli_exit_signals(): void {
+		pcntl_signal( SIGTERM, [ $this, 'cli_signal_handler' ] );
+		pcntl_signal( SIGINT, [ $this, 'cli_signal_handler' ] );
+	}
+
+	/**
+	 * Handle CLI exit signals.
+	 *
+	 * @since 1.2.8
+	 *
+	 * @param mixed $signal
+	 */
+	public function cli_signal_handler( $signal ) {
+		switch ( $signal ) {
+			case SIGTERM:
+			case SIGKILL:
+			case SIGINT:
+				$this->get_output()->writeln( "User interrupted the command, cleaning up required, please wait." );
+				$this->cleanup();
+				exit;
 		}
 	}
 }
