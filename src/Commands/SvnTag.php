@@ -11,6 +11,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 class SvnTag extends Command {
 	protected ?InputInterface $input;
 	protected ?OutputInterface $output;
+	protected ?string $temp_dir;
+	protected ?string $plugin_slug;
+	protected ?string $source_tag;
+	protected ?string $destination_tag;
 
 	/**
 	 * @since 1.2.8
@@ -69,6 +73,42 @@ class SvnTag extends Command {
 		return $this->output;
 	}
 
+	protected function set_temp_dir( string $dir ): void {
+		$this->temp_dir = $dir;
+	}
+
+	protected function get_temp_dir(): string {
+		return $this->temp_dir;
+	}
+
+	protected function set_plugin_slug( string $plugin_slug ): void {
+		$this->plugin_slug = $plugin_slug;
+	}
+
+	protected function get_plugin_slug(): string {
+		return $this->plugin_slug;
+	}
+
+	protected function set_destination_tag( string $tag ): void {
+		$this->destination_tag = $tag;
+	}
+
+	protected function get_destination_tag(): string {
+		return $this->destination_tag;
+	}
+
+	protected function set_source_tag( string $tag ): void {
+		$this->source_tag = $tag;
+	}
+
+	protected function get_source_tag(): string {
+		return $this->source_tag;
+	}
+
+	protected function get_svn_url(): string {
+		return self::WP_ORG_URL . $this->get_plugin_slug();
+	}
+
 	/**
 	 * Executes the command.
 	 *
@@ -90,9 +130,12 @@ class SvnTag extends Command {
 
 		$temp_dir = rtrim( $temp_dir, '/' ) . "/tag-{$id}";
 
-		if ( empty( $local_repo ) ) {
-			$local_repo = "{$temp_dir}/repo";
-		}
+		$this->set_temp_dir( $temp_dir );
+		$this->set_source_tag( $source_tag );
+		$this->set_destination_tag( $plugin );
+		$this->set_plugin_slug( $destination_tag );
+
+		$local_repo = "{$temp_dir}/repo";
 		$svn_url = self::WP_ORG_URL . $plugin;
 
 		// Log the arguments and options
@@ -131,13 +174,6 @@ class SvnTag extends Command {
 			}
 		}
 
-		$output->writeln( 'Creating plugin storage directory: ' . $plugin_dir );
-		mkdir( $plugin_dir, 0755, true );
-
-		if ( ! file_exists( $plugin_dir ) ) {
-			return $this->cleanup_to_error( "Couldn't create the plugin storage directory, aborting." );
-		}
-
 		// Download and extract ZIP file to temporary directory
 		$zip_file = rtrim( $temp_dir, '/' ) . '/plugin.zip';
 
@@ -161,11 +197,10 @@ class SvnTag extends Command {
 
 			shell_exec( "mv {$temp_dir}/{$plugin} $plugin_dir" );
 			if ( ! file_exists( $plugin_dir ) ) {
-				$output->writeln( "<error>ZIP was not extracted correctly, expected destination: {$plugin_dir}.</error>" );
+				return $this->cleanup_to_error( "ZIP was not extracted correctly, expected destination: {$plugin_dir}." );
 			}
 		} else {
-			$output->writeln( '<error>Failed to open ZIP file.</error>' );
-			return self::CMD_FAILURE;
+			return $this->cleanup_to_error( "Failed to open ZIP file." );
 		}
 
 		$cd_to_repo_cmd = "cd {$local_repo} && ";
@@ -196,9 +231,17 @@ class SvnTag extends Command {
 		$source_tag_folder      = "{$local_repo}/tags/{$source_tag}";
 		$destination_tag_folder = "{$local_repo}/tags/{$destination_tag}";
 
+		if ( ! file_exists( $source_tag_folder ) || ! is_dir( $source_tag_folder ) ) {
+			return $this->cleanup_to_error( "The source tag was not downloaded properly, aborting.", true );
+		}
+
+		if ( ! file_exists( $destination_tag_folder ) || ! is_dir( $destination_tag_folder ) ) {
+			return $this->cleanup_to_error( "The destination tag was not downloaded properly, aborting.", true );
+		}
+
 		// Delete tag folder
 		$delete_cmd = "rm -rf {$destination_tag_folder}";
-		$output->writeln( "Removing locally the destination tag: \n" . $delete_cmd );
+		$output->writeln( "Removing the local copy of the destination tag: \n" . $delete_cmd );
 		shell_exec( $delete_cmd );
 
 		// Move extracted files to tag folder
@@ -213,8 +256,7 @@ class SvnTag extends Command {
 		$output->writeln( " - $destination_tag_folder" );
 
 		if ( null === $scan ) {
-			$output->writeln( '<error>Error while trying to compare folders.</error>' );
-			return self::CMD_FAILURE;
+			return $this->cleanup_to_error( "Error while trying to compare folders.", true );
 		}
 
 		if ( ! empty( $scan['added'] ) ) {
@@ -230,6 +272,8 @@ class SvnTag extends Command {
 				$output->writeln( $add_cmd );
 				shell_exec( $cd_to_repo_cmd . $add_cmd );
 			}
+		} else {
+			$output->writeln( "No files added from '{$source_tag}' to '{$destination_tag}'." );
 		}
 
 		if ( ! empty( $scan['deleted'] ) ) {
@@ -246,11 +290,13 @@ class SvnTag extends Command {
 				$output->writeln( $remove_cmd );
 				shell_exec( $cd_to_repo_cmd . $remove_cmd );
 			}
+		} else {
+			$output->writeln( "No files removed from '{$source_tag}' to '{$destination_tag}'." );
 		}
 
 		$output->writeln( '' );
 
-		// Commit changes
+		// Commit changes to SVN.
 		$commit_cmd = "svn commit tags/{$destination_tag} -m 'Apply modifications to {$destination_tag}'";
 		$output->writeln( "Executing SVN Command:  \n" . $commit_cmd );
 		shell_exec( $cd_to_repo_cmd . $commit_cmd );
@@ -267,12 +313,7 @@ class SvnTag extends Command {
 		 * }
 		 */
 
-		$output->writeln( '<success>Operation completed successfully.</success>' );
-
-		$output->writeln( 'Deleting temporary files to cleanup workspace.' );
-		shell_exec( "rm -rf {$temp_dir}" );
-
-		return self::CMD_SUCCESS;
+		return $this->cleanup_to_success( "Operation completed successfully." );
 	}
 
 	/**
@@ -285,7 +326,7 @@ class SvnTag extends Command {
 	 *
 	 * @return array|null
 	 */
-	public function compare_directories( $source, $destination ) {
+	protected function compare_directories( $source, $destination ) {
 		// Ensure directories end with '/'
 		$source      = rtrim( $source, '/' ) . '/';
 		$destination = rtrim( $destination, '/' ) . '/';
@@ -309,9 +350,9 @@ class SvnTag extends Command {
 		];
 	}
 
-	protected function cleanup_to_error( string $message = null ): int {
+	protected function cleanup_to_error( string $message = null, bool $remote_destination_tag = false ): int {
 
-		$this->cleanup();
+		$this->cleanup( $remote_destination_tag );
 
 		$this->get_output()->writeln( $message );
 		return self::CMD_FAILURE;
@@ -324,7 +365,18 @@ class SvnTag extends Command {
 		return self::CMD_SUCCESS;
 	}
 
-	protected function cleanup() {
+	protected function cleanup( bool $remote_destination_tag = false ) {
+		$temp_dir = $this->get_temp_dir();
 
+		$this->get_output()->writeln( 'Deleting temporary files to cleanup workspace.' );
+		shell_exec( "rm -rf {$temp_dir}" );
+
+		if ( $remote_destination_tag ) {
+			$svn_url = $this->get_svn_url();
+			$destination_tag = $this->get_destination_tag();
+
+			$this->get_output()->writeln( "Deleting remote tag '{$destination_tag}'." );
+			shell_exec( "svn rm {$svn_url}/tags/{$destination_tag} -m 'Delete remote tag {$destination_tag}.'" );
+		}
 	}
 }
