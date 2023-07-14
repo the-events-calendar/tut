@@ -65,9 +65,17 @@ export PATH=/path/to/tut:$PATH
 | [`git:clone`](docs/commands/git/clone.md) | Clone a repository |
 | [`git:file`](docs/commands/git/file.md) | Fetch a file from a repository |
 
+
 ## Extension Subcommands
 
 | Command | Description |
 |--|--|
 | [`extension:create`](docs/commands/extension/create.md) | Create a TEC/ET extension |
 | [`extension:set-dependency`](docs/commands/extension/set-dependency.md) | Modifies or adds a dependency to an extension repo on GitHub |
+
+## SVN Subcommands
+
+| Command                               | Description                                  |
+|---------------------------------------|----------------------------------------------|
+| [`svn:tag`](docs/commands/svn/tag.md) | Create a tag on WordPress.org SVN repository |
+
