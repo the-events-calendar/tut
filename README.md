@@ -75,7 +75,8 @@ export PATH=/path/to/tut:$PATH
 
 ## SVN Subcommands
 
-| Command                               | Description                                  |
-|---------------------------------------|----------------------------------------------|
-| [`svn:tag`](docs/commands/svn/tag.md) | Create a tag on WordPress.org SVN repository |
+| Command                                       | Description                                   |
+|-----------------------------------------------|-----------------------------------------------|
+| [`svn:tag`](docs/commands/svn/tag.md)         | Create a tag on WordPress.org SVN repository  |
+| [`svn:release`](docs/commands/svn/release.md) | Release a tag on WordPress.org SVN repository |
 
