@@ -1,4 +1,4 @@
-## `tut svn:tag`
+## `tut svn:release`
 
 **Release new versions on WP.org**
 
