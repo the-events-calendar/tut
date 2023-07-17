@@ -16,7 +16,7 @@ class SvnTag extends Command {
 	 *
 	 * @var InputInterface|null
 	 */
-	protected ?InputInterface $input;
+	protected InputInterface $input;
 
 	/**
 	 * Stores the output interface.
@@ -25,7 +25,7 @@ class SvnTag extends Command {
 	 *
 	 * @var OutputInterface|null
 	 */
-	protected ?OutputInterface $output;
+	protected OutputInterface $output;
 
 	/**
 	 * Stores the command steps to cleanup.
@@ -43,7 +43,7 @@ class SvnTag extends Command {
 	 *
 	 * @var string|null
 	 */
-	protected ?string $temp_dir;
+	protected string $temp_dir;
 
 	/**
 	 * Stores the plugin slug.
@@ -52,7 +52,7 @@ class SvnTag extends Command {
 	 *
 	 * @var string|null
 	 */
-	protected ?string $plugin_slug;
+	protected string $plugin_slug;
 
 	/**
 	 * Stores the source tag.
@@ -61,7 +61,7 @@ class SvnTag extends Command {
 	 *
 	 * @var string|null
 	 */
-	protected ?string $source_tag;
+	protected string $source_tag;
 
 	/**
 	 * Stores the destination tag.
@@ -70,7 +70,7 @@ class SvnTag extends Command {
 	 *
 	 * @var string|null
 	 */
-	protected ?string $destination_tag;
+	protected string $destination_tag;
 
 	/**
 	 * @since 1.2.8
