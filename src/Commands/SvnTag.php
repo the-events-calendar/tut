@@ -16,7 +16,7 @@ class SvnTag extends Command {
 	 *
 	 * @var InputInterface|null
 	 */
-	protected InputInterface $input;
+	protected $input;
 
 	/**
 	 * Stores the output interface.
@@ -25,7 +25,7 @@ class SvnTag extends Command {
 	 *
 	 * @var OutputInterface|null
 	 */
-	protected OutputInterface $output;
+	protected $output;
 
 	/**
 	 * Stores the command steps to cleanup.
@@ -34,7 +34,7 @@ class SvnTag extends Command {
 	 *
 	 * @var array
 	 */
-	protected array $cleanup_steps = [];
+	protected $cleanup_steps = [];
 
 	/**
 	 * Stores the temporary directory to use.
@@ -43,7 +43,7 @@ class SvnTag extends Command {
 	 *
 	 * @var string|null
 	 */
-	protected string $temp_dir;
+	protected $temp_dir;
 
 	/**
 	 * Stores the plugin slug.
@@ -52,7 +52,7 @@ class SvnTag extends Command {
 	 *
 	 * @var string|null
 	 */
-	protected string $plugin_slug;
+	protected $plugin_slug;
 
 	/**
 	 * Stores the source tag.
@@ -61,7 +61,7 @@ class SvnTag extends Command {
 	 *
 	 * @var string|null
 	 */
-	protected string $source_tag;
+	protected $source_tag;
 
 	/**
 	 * Stores the destination tag.
@@ -70,28 +70,28 @@ class SvnTag extends Command {
 	 *
 	 * @var string|null
 	 */
-	protected string $destination_tag;
+	protected $destination_tag;
 
 	/**
 	 * @since 1.2.8
 	 *
 	 * @var int The exit code to use when the command succeeds.
 	 */
-	protected const CMD_SUCCESS = 0;
+	const CMD_SUCCESS = 0;
 
 	/**
 	 * @since 1.2.8
 	 *
 	 * @var int The exit code to use when the command fails.
 	 */
-	protected const CMD_FAILURE = 1;
+	const CMD_FAILURE = 1;
 
 	/**
 	 * @since 1.2.8
 	 *
 	 * @var string Store the base URL for the WordPress.org SVN repository.
 	 */
-	protected const WP_ORG_URL = 'https://plugins.svn.wordpress.org/';
+	const WP_ORG_URL = 'https://plugins.svn.wordpress.org/';
 
 	/**
 	 * Configures the command.
