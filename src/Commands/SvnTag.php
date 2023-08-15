@@ -73,6 +73,18 @@ class SvnTag extends Command {
 	protected ?string $destination_tag;
 
 	/**
+	 * Stores a list of allowed steps.
+	 *
+	 * @since 1.2.9
+	 *
+	 * @var array<string>
+	 */
+	protected array $allowed_steps = [
+		'remove_temp_dir',
+		'remove_remote_destination_tag',
+	];
+
+	/**
 	 * @since 1.2.8
 	 *
 	 * @var int The exit code to use when the command succeeds.
@@ -122,16 +134,29 @@ class SvnTag extends Command {
 	}
 
 	protected function include_cleanup_step( string $step ): void {
-		$allowed_steps = [
-			'remove_temp_dir',
-			'remove_remote_destination_tag',
-		];
-
-		if ( ! in_array( $step, $allowed_steps, true ) ) {
+		if ( ! in_array( $step, $this->allowed_steps, true ) ) {
 			return;
 		}
 
 		$this->cleanup_steps[] = $step;
+	}
+
+	protected function remove_cleanup_step( string $step ): void {
+		if ( ! in_array( $step, $this->allowed_steps, true ) ) {
+			return;
+		}
+
+		$index = array_search( $step, $this->cleanup_steps, true );
+
+		// Bail if the step is not in the array.
+		if ( ! isset( $this->cleanup_steps[ $index ] ) ) {
+			return;
+		}
+
+		unset( $this->cleanup_steps[ $index ] );
+
+		// Reindex the array.
+		$this->cleanup_steps = array_values( $this->cleanup_steps );
 	}
 
 	/**
@@ -462,6 +487,8 @@ class SvnTag extends Command {
 		$commit_cmd = "svn commit tags/{$destination_tag} -m 'Apply modifications to {$destination_tag}'";
 		$output->writeln( "Executing SVN Command:  \n" . $commit_cmd );
 		shell_exec( $cd_to_repo_cmd . $commit_cmd );
+
+		$this->remove_cleanup_step( 'remove_remote_destination_tag' );
 
 		/**
 		 * The check sum below doesnt work, need some more work before its ready.
