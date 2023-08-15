@@ -133,6 +133,13 @@ class SvnTag extends Command {
 		return $this->cleanup_steps;
 	}
 
+	/**
+	 * Includes a cleanup step, if it's an allowed step.
+	 *
+	 * @since 1.2.8
+	 *
+	 * @param string $step
+	 */
 	protected function include_cleanup_step( string $step ): void {
 		if ( ! in_array( $step, $this->allowed_steps, true ) ) {
 			return;
@@ -141,6 +148,13 @@ class SvnTag extends Command {
 		$this->cleanup_steps[] = $step;
 	}
 
+	/**
+	 * Removes a cleanup step, if it's an allowed step.
+	 *
+	 * @since 1.2.9
+	 *
+	 * @param string $step
+	 */
 	protected function remove_cleanup_step( string $step ): void {
 		if ( ! in_array( $step, $this->allowed_steps, true ) ) {
 			return;
