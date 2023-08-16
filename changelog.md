@@ -4,9 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.2.9] - 2023-07-17
+## [1.2.10] - 2023-08-17
 
 - Enhancement: Add `svn:release` command to release a given SVN tag for a plugin.
+
+## [1.2.9] - 2023-08-15
+
+- Fix: On `svn:tag` command to ensure cleanup doesn't remove the destination tag on success.
 
 ## [1.2.8] - 2023-07-12
 

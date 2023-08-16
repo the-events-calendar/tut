@@ -16,7 +16,7 @@ class Tag extends Command {
 	 *
 	 * @var InputInterface|null
 	 */
-	protected ?InputInterface $input;
+	protected $input;
 
 	/**
 	 * Stores the output interface.
@@ -25,7 +25,7 @@ class Tag extends Command {
 	 *
 	 * @var OutputInterface|null
 	 */
-	protected ?OutputInterface $output;
+	protected $output;
 
 	/**
 	 * Stores the command steps to cleanup.
@@ -34,7 +34,7 @@ class Tag extends Command {
 	 *
 	 * @var array
 	 */
-	protected array $cleanup_steps = [];
+	protected $cleanup_steps = [];
 
 	/**
 	 * Stores the temporary directory to use.
@@ -43,7 +43,7 @@ class Tag extends Command {
 	 *
 	 * @var string|null
 	 */
-	protected ?string $temp_dir;
+	protected $temp_dir;
 
 	/**
 	 * Stores the plugin slug.
@@ -52,7 +52,7 @@ class Tag extends Command {
 	 *
 	 * @var string|null
 	 */
-	protected ?string $plugin_slug;
+	protected $plugin_slug;
 
 	/**
 	 * Stores the source tag.
@@ -61,7 +61,7 @@ class Tag extends Command {
 	 *
 	 * @var string|null
 	 */
-	protected ?string $source_tag;
+	protected $source_tag;
 
 	/**
 	 * Stores the destination tag.
@@ -70,28 +70,40 @@ class Tag extends Command {
 	 *
 	 * @var string|null
 	 */
-	protected ?string $destination_tag;
+	protected $destination_tag;
+
+	/**
+	 * Stores a list of allowed steps.
+	 *
+	 * @since 1.2.9
+	 *
+	 * @var array<string>
+	 */
+	protected array $allowed_steps = [
+		'remove_temp_dir',
+		'remove_remote_destination_tag',
+	];
 
 	/**
 	 * @since 1.2.8
 	 *
 	 * @var int The exit code to use when the command succeeds.
 	 */
-	protected const CMD_SUCCESS = 0;
+	const CMD_SUCCESS = 0;
 
 	/**
 	 * @since 1.2.8
 	 *
 	 * @var int The exit code to use when the command fails.
 	 */
-	protected const CMD_FAILURE = 1;
+	const CMD_FAILURE = 1;
 
 	/**
 	 * @since 1.2.8
 	 *
 	 * @var string Store the base URL for the WordPress.org SVN repository.
 	 */
-	protected const WP_ORG_URL = 'https://plugins.svn.wordpress.org/';
+	const WP_ORG_URL = 'https://plugins.svn.wordpress.org/';
 
 	/**
 	 * Configures the command.
@@ -121,17 +133,44 @@ class Tag extends Command {
 		return $this->cleanup_steps;
 	}
 
+	/**
+	 * Includes a cleanup step, if it's an allowed step.
+	 *
+	 * @since 1.2.8
+	 *
+	 * @param string $step
+	 */
 	protected function include_cleanup_step( string $step ): void {
-		$allowed_steps = [
-			'remove_temp_dir',
-			'remove_remote_destination_tag',
-		];
-
-		if ( ! in_array( $step, $allowed_steps, true ) ) {
+		if ( ! in_array( $step, $this->allowed_steps, true ) ) {
 			return;
 		}
 
 		$this->cleanup_steps[] = $step;
+	}
+
+	/**
+	 * Removes a cleanup step, if it's an allowed step.
+	 *
+	 * @since 1.2.9
+	 *
+	 * @param string $step
+	 */
+	protected function remove_cleanup_step( string $step ): void {
+		if ( ! in_array( $step, $this->allowed_steps, true ) ) {
+			return;
+		}
+
+		$index = array_search( $step, $this->cleanup_steps, true );
+
+		// Bail if the step is not in the array.
+		if ( ! isset( $this->cleanup_steps[ $index ] ) ) {
+			return;
+		}
+
+		unset( $this->cleanup_steps[ $index ] );
+
+		// Reindex the array.
+		$this->cleanup_steps = array_values( $this->cleanup_steps );
 	}
 
 	/**
@@ -462,6 +501,8 @@ class Tag extends Command {
 		$commit_cmd = "svn commit tags/{$destination_tag} -m 'Apply modifications to {$destination_tag}'";
 		$output->writeln( "Executing SVN Command:  \n" . $commit_cmd );
 		shell_exec( $cd_to_repo_cmd . $commit_cmd );
+
+		$this->remove_cleanup_step( 'remove_remote_destination_tag' );
 
 		/**
 		 * The check sum below doesnt work, need some more work before its ready.
