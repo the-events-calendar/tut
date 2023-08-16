@@ -8,7 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix: On `svn:tag` command to ensure cleanup doesn't remove the destination tag on success.
 
-
 ## [1.2.8] - 2023-07-12
 
 - Enhancement: Add `svn:tag` command to create a new SVN tag for a plugin.
