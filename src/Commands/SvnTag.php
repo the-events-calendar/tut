@@ -79,7 +79,7 @@ class SvnTag extends Command {
 	 *
 	 * @var array<string>
 	 */
-	protected array $allowed_steps = [
+	protected $allowed_steps = [
 		'remove_temp_dir',
 		'remove_remote_destination_tag',
 	];

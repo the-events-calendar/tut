@@ -14,7 +14,7 @@
   ],
   "minimum-stability": "stable",
   "require": {
-    "php": "7.4",
+    "php": "7.2",
     "symfony/console": "^3.1",
     "symfony/process": "^3.1",
     "maciejczyzewski/bottomline": "*",
