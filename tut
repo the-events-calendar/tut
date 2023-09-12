@@ -4,7 +4,7 @@
 require dirname( __FILE__ ) . '/vendor/autoload.php';
 
 define( '__TUT_DIR__', __DIR__ );
-define( 'TUT_VERSION', '1.2.9' );
+define( 'TUT_VERSION', '1.2.10' );
 
 use Symfony\Component\Console\Application;
 use TUT\Commands;
@@ -57,6 +57,7 @@ $application->add( new Commands\Sync );
 $application->add( new Commands\TBD );
 $application->add( new Commands\Version );
 $application->add( new Commands\Upgrade );
-$application->add( new Commands\SvnTag );
+$application->add( new Commands\SVN\Tag );
+$application->add( new Commands\SVN\Release );
 
 $application->run();
