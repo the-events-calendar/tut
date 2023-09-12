@@ -12,73 +12,84 @@ class Release extends Command {
 	/**
 	 * Stores the input interface.
 	 *
-	 * @since 1.2.9
+	 * @since 1.2.10
 	 *
 	 * @var InputInterface|null
 	 */
-	protected ?InputInterface $input;
+	protected $input;
 
 	/**
 	 * Stores the output interface.
 	 *
-	 * @since 1.2.9
+	 * @since 1.2.10
 	 *
 	 * @var OutputInterface|null
 	 */
-	protected ?OutputInterface $output;
+	protected $output;
 
 	/**
 	 * Stores the command steps to cleanup.
 	 *
-	 * @since 1.2.9
+	 * @since 1.2.10
 	 *
 	 * @var array
 	 */
-	protected array $cleanup_steps = [];
+	protected $cleanup_steps = [];
+
+	/**
+	 * Stores a list of allowed steps.
+	 *
+	 * @since 1.2.10
+	 *
+	 * @var array<string>
+	 */
+	protected $allowed_steps = [
+		'remove_temp_dir',
+	];
 
 	/**
 	 * Stores the temporary directory to use.
 	 *
-	 * @since 1.2.9
+	 * @since 1.2.10
 	 *
 	 * @var string|null
 	 */
-	protected ?string $temp_dir;
+	protected $temp_dir;
 
 	/**
 	 * Stores the plugin slug.
 	 *
-	 * @since 1.2.9
+	 * @since 1.2.10
 	 *
 	 * @var string|null
 	 */
-	protected ?string $plugin_slug;
+	protected $plugin_slug;
 
 	/**
 	 * Stores the destination tag.
 	 *
-	 * @since 1.2.9
+	 * @since 1.2.10
 	 *
 	 * @var string|null
 	 */
-	protected ?string $tag;
+	protected $tag;
 
 	/**
-	 * @since 1.2.9
+	 * @since 1.2.10
 	 *
 	 * @var int The exit code to use when the command succeeds.
 	 */
 	protected const CMD_SUCCESS = 0;
 
 	/**
-	 * @since 1.2.9
+	 * @since 1.2.10
 	 *
 	 * @var int The exit code to use when the command fails.
 	 */
 	protected const CMD_FAILURE = 1;
 
 	/**
-	 * @since 1.2.9
+	 * @since 1.2.10
 	 *
 	 * @var string Store the base URL for the WordPress.org SVN repository.
 	 */
@@ -87,7 +98,7 @@ class Release extends Command {
 	/**
 	 * Configures the command.
 	 *
-	 * @since 1.2.9
+	 * @since 1.2.10
 	 */
 	protected function configure() {
 		$temp_dir = '/tmp/svn-tag/';
@@ -110,12 +121,15 @@ class Release extends Command {
 		return $this->cleanup_steps;
 	}
 
+	/**
+	 * Includes a cleanup step, if it's an allowed step.
+	 *
+	 * @since 1.2.10
+	 *
+	 * @param string $step
+	 */
 	protected function include_cleanup_step( string $step ): void {
-		$allowed_steps = [
-			'remove_temp_dir',
-		];
-
-		if ( ! in_array( $step, $allowed_steps, true ) ) {
+		if ( ! in_array( $step, $this->allowed_steps, true ) ) {
 			return;
 		}
 
@@ -123,9 +137,34 @@ class Release extends Command {
 	}
 
 	/**
+	 * Removes a cleanup step, if it's an allowed step.
+	 *
+	 * @since 1.2.10
+	 *
+	 * @param string $step
+	 */
+	protected function remove_cleanup_step( string $step ): void {
+		if ( ! in_array( $step, $this->allowed_steps, true ) ) {
+			return;
+		}
+
+		$index = array_search( $step, $this->cleanup_steps, true );
+
+		// Bail if the step is not in the array.
+		if ( ! isset( $this->cleanup_steps[ $index ] ) ) {
+			return;
+		}
+
+		unset( $this->cleanup_steps[ $index ] );
+
+		// Reindex the array.
+		$this->cleanup_steps = array_values( $this->cleanup_steps );
+	}
+
+	/**
 	 * Gets the input interface.
 	 *
-	 * @since 1.2.9
+	 * @since 1.2.10
 	 *
 	 * @return InputInterface The input interface.
 	 */
@@ -136,7 +175,7 @@ class Release extends Command {
 	/**
 	 * Sets the input interface.
 	 *
-	 * @since 1.2.9
+	 * @since 1.2.10
 	 */
 	protected function set_input( InputInterface $input ): void {
 		$this->input = $input;
@@ -145,7 +184,7 @@ class Release extends Command {
 	/**
 	 * Sets the output interface.
 	 *
-	 * @since 1.2.9
+	 * @since 1.2.10
 	 */
 	protected function set_output( OutputInterface $output ): void {
 		$this->output = $output;
@@ -154,7 +193,7 @@ class Release extends Command {
 	/**
 	 * Gets the output interface.
 	 *
-	 * @since 1.2.9
+	 * @since 1.2.10
 	 *
 	 * @return OutputInterface The output interface.
 	 */
@@ -165,7 +204,7 @@ class Release extends Command {
 	/**
 	 * Sets the temporary directory.
 	 *
-	 * @since 1.2.9
+	 * @since 1.2.10
 	 */
 	protected function set_temp_dir( string $dir ): void {
 		$this->temp_dir = $dir;
@@ -174,7 +213,7 @@ class Release extends Command {
 	/**
 	 * Gets the temporary directory.
 	 *
-	 * @since 1.2.9
+	 * @since 1.2.10
 	 *
 	 * @return string The temporary directory.
 	 */
@@ -185,7 +224,7 @@ class Release extends Command {
 	/**
 	 * Sets the plugin slug.
 	 *
-	 * @since 1.2.9
+	 * @since 1.2.10
 	 */
 	protected function set_plugin_slug( string $plugin_slug ): void {
 		$this->plugin_slug = $plugin_slug;
@@ -194,7 +233,7 @@ class Release extends Command {
 	/**
 	 * Gets the plugin slug.
 	 *
-	 * @since 1.2.9
+	 * @since 1.2.10
 	 *
 	 * @return string The plugin slug.
 	 */
@@ -205,7 +244,7 @@ class Release extends Command {
 	/**
 	 *
 	 *
-	 * @since 1.2.9
+	 * @since 1.2.10
 	 */
 	protected function set_tag( string $tag ): void {
 		$this->tag = $tag;
@@ -214,7 +253,7 @@ class Release extends Command {
 	/**
 	 * Gets the destination tag.
 	 *
-	 * @since 1.2.9
+	 * @since 1.2.10
 	 *
 	 * @return string The destination tag.
 	 */
@@ -225,7 +264,7 @@ class Release extends Command {
 	/**
 	 * Gets the URL for the plugin on WordPress.org.
 	 *
-	 * @since 1.2.9
+	 * @since 1.2.10
 	 *
 	 * @return string The URL for the plugin on WordPress.org.
 	 */
@@ -236,7 +275,7 @@ class Release extends Command {
 	/**
 	 * Executes the command.
 	 *
-	 * @since 1.2.9
+	 * @since 1.2.10
 	 */
 	protected function execute( InputInterface $input, OutputInterface $output ) {
 		$this->set_input( $input );
@@ -255,7 +294,7 @@ class Release extends Command {
 		$this->set_plugin_slug( $plugin );
 
 		$local_repo = "{$temp_dir}/repo";
-		$svn_url    = self::WP_ORG_URL . $plugin;
+		$svn_url    = $this->get_svn_url();
 
 		// Log the arguments and options
 		$output->writeln( 'Plugin: ' . $plugin );
@@ -367,10 +406,10 @@ class Release extends Command {
 	}
 
 	/**
-	 * Compare two directories and return boolean depending if they are equal.
+	 * Compare two directories and return boolean depending on if they are equal.
 	 * It will check file paths and file sizes.
 	 *
-	 * @since 1.2.9
+	 * @since 1.2.10
 	 *
 	 * @param string $plugin_folder Directory A.
 	 * @param string $tag_folder    Directory B.
@@ -397,7 +436,7 @@ class Release extends Command {
 	/**
 	 * Cleanup the workspace and return error.
 	 *
-	 * @since 1.2.9
+	 * @since 1.2.10
 	 *
 	 * @param string|null $message
 	 *
@@ -414,7 +453,7 @@ class Release extends Command {
 	/**
 	 * Cleanup the workspace and return success.
 	 *
-	 * @since 1.2.9
+	 * @since 1.2.10
 	 *
 	 * @param string|null $message
 	 *
@@ -430,7 +469,7 @@ class Release extends Command {
 	/**
 	 * Cleanup the workspace.
 	 *
-	 * @since 1.2.9
+	 * @since 1.2.10
 	 */
 	protected function cleanup() {
 		if ( $this->has_cleanup_step( 'remove_temp_dir' ) ) {
@@ -444,7 +483,7 @@ class Release extends Command {
 	/**
 	 * Catch CLI exit signals.
 	 *
-	 * @since 1.2.9
+	 * @since 1.2.10
 	 */
 	protected function catch_cli_exit_signals(): void {
 		pcntl_signal( SIGTERM, [ $this, 'cli_signal_handler' ] );
@@ -454,7 +493,7 @@ class Release extends Command {
 	/**
 	 * Handle CLI exit signals.
 	 *
-	 * @since 1.2.9
+	 * @since 1.2.10
 	 *
 	 * @param mixed $signal
 	 */
