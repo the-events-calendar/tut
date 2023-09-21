@@ -234,6 +234,17 @@
 			"alias"     : [ "lec", "loxi-plugin" ],
 			"has_readme": true,
 			"free"      : true
+		},
+		{
+			"repo"          : "the-events-calendar/event-tickets-wallet-plus",
+			"name"          : "event-tickets-wallet-plus",
+			"bootstrap"     : "event-tickets-wallet-plus.php",
+			"main"          : "src/Tickets_Wallet_Plus/Plugin_Register.php",
+			"version"       : "VERSION",
+			"alias"         : [ "wallet+", "wallet-plus", "etwp", "etwplus", "etw+", "event-tickets-wallet", "event-tickets-wallet-plus" ],
+			"has_readme"    : true,
+			"free"          : false,
+			"submodulesync" : true
 		}
 	],
 	"submodules": [
