@@ -245,6 +245,17 @@
 			"has_readme"    : true,
 			"free"          : false,
 			"submodulesync" : true
+		},
+		{
+			"repo"          : "stellarwp/wp-conference-schedule-pro",
+			"name"          : "event-schedule-manager",
+			"bootstrap"     : "wp-conference-schedule-pro.php",
+			"main"          : "src/Conference/Plugin_Register.php",
+			"version"       : "VERSION",
+			"alias"         : [ "esm", "schedule-manager", "event-schedule-manager" ],
+			"has_readme"    : true,
+			"free"          : false,
+			"submodulesync" : false
 		}
 	],
 	"submodules": [
