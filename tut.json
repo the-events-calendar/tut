@@ -247,9 +247,9 @@
 			"submodulesync" : true
 		},
 		{
-			"repo"          : "stellarwp/wp-conference-schedule-pro",
+			"repo"          : "stellarwp/event-schedule-manager",
 			"name"          : "event-schedule-manager",
-			"bootstrap"     : "wp-conference-schedule-pro.php",
+			"bootstrap"     : "event-schedule-manager.php",
 			"main"          : "src/Conference/Plugin_Register.php",
 			"version"       : "VERSION",
 			"alias"         : [ "esm", "schedule-manager", "event-schedule-manager" ],
