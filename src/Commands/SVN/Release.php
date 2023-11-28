@@ -373,7 +373,7 @@ class Release extends Command {
 			$output->writeln( "Executing SVN Command: \n" . $clone_cmd );
 			shell_exec( $clone_cmd );
 
-			$update_tag_trunk_cmd = "svn update tags/{$tag}";
+			$update_tag_trunk_cmd = "svn update tags/{$tag} trunk/readme.txt";
 			$output->writeln( "Executing SVN Command: \n" . $update_tag_trunk_cmd );
 			shell_exec( $cd_to_repo_cmd . $update_tag_trunk_cmd );
 
@@ -398,9 +398,13 @@ class Release extends Command {
 		$output->writeln( '' );
 
 		// Copy SVN tag readme into trunk.
-		$copy_cmd = "svn copy {$svn_url}/tags/{$tag}/readme.txt {$svn_url}/trunk/readme.txt -m 'Copying {$tag} readme.txt into Trunk.'";
-		$output->writeln( "Executing SVN Command:  \n" . $copy_cmd );
+		$copy_cmd = $cd_to_repo_cmd . "\cp -f tags/{$tag}/readme.txt trunk/readme.txt";
+		$output->writeln( "Executing Local Command:  \n" . $copy_cmd );
 		shell_exec( $copy_cmd );
+
+		$svn_commit_cp = "svn ci -m 'Copying {$tag} readme.txt into Trunk.'";
+		$output->writeln( "Executing SVN Command:  \n" . $svn_commit_cp );
+		shell_exec( $svn_commit_cp );
 
 		return $this->cleanup_to_success( "Operation completed successfully." );
 	}
