@@ -100,6 +100,7 @@ class GlotPress extends Command {
 			// cd into the plugin directory
 			chdir( $plugin_dir );
 
+			// @todo: were we expecting to do something with this?
 			$this->has_common = file_exists( 'common' );
 
 			$this->download_language_files( $plugin );
@@ -173,7 +174,7 @@ class GlotPress extends Command {
 		array_map(
 			static function( $promise ) use ( $connections ) {
 				$connections++;
-				$wait = ( 0 === $connections % 4 ) ? 250 : 50;
+				$wait = ( 0 === $connections % 4 ) ? 250000 : 50000;
 				// Add some delay to prevent sever lockout
 				usleep( $wait );
 				$promise->wait();
