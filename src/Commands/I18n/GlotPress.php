@@ -146,7 +146,7 @@ class GlotPress extends Command {
 				continue;
 			}
 
-			// Skip any translation set that doest match our min translated.
+			// Skip any translation set that does't match our min translated.
 			if ( $options->filter->minimum_percentage > $translation->percent_translated ) {
 				continue;
 			}
@@ -160,9 +160,18 @@ class GlotPress extends Command {
 			}
 		}
 
-		array_map( static function( $promise ) {
-			$promise->wait();
-		}, $promises );
+		$connections = 0;
+
+		array_map(
+			static function( $promise ) use ( $connections ) {
+				$connections++;
+				$wait = ( 0 === $connections % 4 ) ? 250 : 50;
+				// Add some delay to prevent sever lockout
+				usleep( $wait );
+				$promise->wait();
+			},
+			$promises
+		);
 	}
 
 	protected function download_and_save_translation( $plugin, $options, $translation, $format, $project_url, $tried = 0 ) {
