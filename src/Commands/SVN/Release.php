@@ -287,7 +287,7 @@ class Release extends Command {
 		$checksum_zip_url = $input->getOption( 'checksum_zip' );
 		$temp_dir         = $input->getOption( 'temp_dir' );
 
-		$temp_dir = rtrim( $temp_dir, '/' ) . "/tag-{$id}";
+		$temp_dir = rtrim( $temp_dir, '/' ) . "/release-{$id}";
 
 		$this->set_temp_dir( $temp_dir );
 		$this->set_tag( $tag );
@@ -368,22 +368,24 @@ class Release extends Command {
 			} else {
 				return $this->cleanup_to_error( "Failed to open ZIP file." );
 			}
+		}
 
-			$clone_cmd = "svn co {$svn_url} {$local_repo} --depth=immediates";
-			$output->writeln( "Executing SVN Command: \n" . $clone_cmd );
-			shell_exec( $clone_cmd );
+		$clone_cmd = "svn co {$svn_url} {$local_repo} --depth=immediates";
+		$output->writeln( "Executing SVN Command: \n" . $clone_cmd );
+		shell_exec( $clone_cmd );
 
-			$update_tag_trunk_cmd = "svn update tags/{$tag}";
-			$output->writeln( "Executing SVN Command: \n" . $update_tag_trunk_cmd );
-			shell_exec( $cd_to_repo_cmd . $update_tag_trunk_cmd );
+		$update_tag_trunk_cmd = "svn update tags/{$tag} trunk/readme.txt";
+		$output->writeln( "Executing SVN Command: \n" . $update_tag_trunk_cmd );
+		shell_exec( $cd_to_repo_cmd . $update_tag_trunk_cmd );
 
-			// Compare tag folder and extracted folder.
-			$tag_folder = "{$local_repo}/tags/{$tag}";
+		// Compare tag folder and extracted folder.
+		$tag_folder = "{$local_repo}/tags/{$tag}";
 
-			if ( ! file_exists( $tag_folder ) || ! is_dir( $tag_folder ) ) {
-				return $this->cleanup_to_error( "The tag was not downloaded properly, aborting." );
-			}
+		if ( ! file_exists( $tag_folder ) || ! is_dir( $tag_folder ) ) {
+			return $this->cleanup_to_error( "The tag was not downloaded properly, aborting." );
+		}
 
+		if ( ! empty( $checksum_zip_url ) ) {
 			$scan = $this->check_folder_checksum( $plugin_dir, $tag_folder );
 
 			$output->writeln( "Comparing Directories:" );
@@ -398,9 +400,13 @@ class Release extends Command {
 		$output->writeln( '' );
 
 		// Copy SVN tag readme into trunk.
-		$copy_cmd = "svn copy {$svn_url}/tags/{$tag}/readme.txt {$svn_url}/trunk/readme.txt -m 'Copying {$tag} readme.txt into Trunk.'";
-		$output->writeln( "Executing SVN Command:  \n" . $copy_cmd );
-		shell_exec( $copy_cmd );
+		$copy_cmd = "\cp -f tags/{$tag}/readme.txt trunk/readme.txt";
+		$output->writeln( "Executing Local Command:  \n" . $copy_cmd );
+		shell_exec( $cd_to_repo_cmd . $copy_cmd );
+
+		$svn_commit_cp = "svn ci -m 'Copying {$tag} readme.txt into Trunk.'";
+		$output->writeln( "Executing SVN Command:  \n" . $svn_commit_cp );
+		shell_exec( $cd_to_repo_cmd . $svn_commit_cp );
 
 		return $this->cleanup_to_success( "Operation completed successfully." );
 	}
