@@ -12,12 +12,12 @@ use GuzzleHttp\Client;
 
 class GlotPress extends Command {
 	/**
-	 * @var string The branch in which the version is being prepared
+	 * @var string The branch in which the version is being prepared.
 	 */
 	protected $branch;
 
 	/**
-	 * @var bool Has a common/ directory
+	 * @var bool Has a common/ directory. Unused.
 	 */
 	private $has_common = false;
 
@@ -68,6 +68,9 @@ class GlotPress extends Command {
 		return file_exists( 'package.json' );
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function configure() {
 		parent::configure();
 
@@ -78,6 +81,9 @@ class GlotPress extends Command {
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function execute( InputInterface $input, OutputInterface $output ) {
 		$this->retries = (int) $this->retries ?: $input->getOption( 'retries' );
 
@@ -94,6 +100,7 @@ class GlotPress extends Command {
 			// cd into the plugin directory
 			chdir( $plugin_dir );
 
+			// @todo: were we expecting to do something with this?
 			$this->has_common = file_exists( 'common' );
 
 			$this->download_language_files( $plugin );
@@ -108,7 +115,9 @@ class GlotPress extends Command {
 	}
 
 	/**
-	 * Runs build commands in parallel
+	 * Runs build commands in parallel.
+	 *
+	 * @param object $plugin Plugin object.
 	 */
 	private function download_language_files( $plugin ) {
 		$package = $this->get_plugin_package_data();
@@ -141,12 +150,12 @@ class GlotPress extends Command {
 		$promises = [];
 
 		foreach ( $project_data->translation_sets as $translation ) {
-			// skip when translations are zero.
+			// Skip when translations are zero.
 			if ( 0 === $translation->current_count ) {
 				continue;
 			}
 
-			// Skip any translation set that doest match our min translated.
+			// Skip any translation set that doesn't match our min % translated.
 			if ( $options->filter->minimum_percentage > $translation->percent_translated ) {
 				continue;
 			}
@@ -160,11 +169,32 @@ class GlotPress extends Command {
 			}
 		}
 
-		array_map( static function( $promise ) {
-			$promise->wait();
-		}, $promises );
+		$connections = 0;
+
+		array_map(
+			static function( $promise ) use ( $connections ) {
+				$connections++;
+				$wait = ( 0 === $connections % 4 ) ? 250000 : 50000;
+				// Add some delay to prevent sever lockout
+				usleep( $wait );
+				$promise->wait();
+			},
+			$promises
+		);
 	}
 
+	/**
+	 * Downloads and saves a translation file from the .org translation API.
+	 *
+	 * @param object $plugin      Unused plugin object.
+	 * @param object $options     Option object
+	 * @param object $translation Translation object.
+	 * @param string $format      File format.
+	 * @param string $project_url Project URL.
+	 * @param int    $tried       How many times we tried to download this file.
+	 *
+	 * @return null|\GuzzleHttp\Promise\PromiseInterface $promise The promise for later consumption
+	 */
 	protected function download_and_save_translation( $plugin, $options, $translation, $format, $project_url, $tried = 0 ) {
 		$translation_url = "{$project_url}/{$translation->locale}/{$translation->slug}/export-translations?format={$format}";
 		if ( $tried >= $this->retries ) {
@@ -200,7 +230,7 @@ class GlotPress extends Command {
 			if ( 200 > $translation_size ) {
 				$this->output->writeln( "<fg=red>Failed to fetch translation from {$translation_url}</>", OutputInterface::VERBOSITY_VERBOSE );
 
-				// Not sure if 2seconds is needed, but it prevents they firewall from catching us.
+				// Not sure if 2 seconds is needed, but it prevents the firewall from catching us.
 				sleep( 2 );
 
 				// Retries to download this file.

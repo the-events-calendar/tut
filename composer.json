@@ -30,5 +30,10 @@
     "psr-4": {
       "TUT\\" : "src/"
     }
+  },
+  "config": {
+    "allow-plugins": {
+      "php-http/discovery": true
+    }
   }
 }
