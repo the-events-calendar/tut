@@ -116,7 +116,7 @@ class Tag extends Command {
 		$this
 			->setName( 'svn:tag' )
 			->setDescription( 'Creates a new SVN tag and applies changes from a ZIP file.' )
-			->setHelp( 'This command allows you to create a new SVN tag from an existing tag and apply changes from a ZIP file.' )
+			->setHelp( 'This command allows you to create a new SVN tag from an existing tag on WordPress.org and apply changes from a ZIP file.' )
 			->addArgument( 'plugin', InputArgument::REQUIRED, 'The slug of the Plugin on WordPress.org.' )
 			->addArgument( 'source_tag', InputArgument::REQUIRED, 'The SVN tag to be copied.' )
 			->addArgument( 'destination_tag', InputArgument::REQUIRED, 'The new SVN tag.' )

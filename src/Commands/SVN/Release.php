@@ -105,8 +105,8 @@ class Release extends Command {
 
 		$this
 			->setName( 'svn:release' )
-			->setDescription( 'Changes the SVN trunk readme.txt Stable Tag of a Plugin.' )
-			->setHelp( 'This command allows you to update what is the Stable Tag version of a WP.org plugin.' )
+			->setDescription( 'Changes the SVN trunk readme.txt "stable" tag of a plugin.' )
+			->setHelp( 'This command allows you to update which version of a plugin the "stable" tag applies to WordPress.org.' )
 			->addArgument( 'plugin', InputArgument::REQUIRED, 'The slug of the Plugin on WordPress.org.' )
 			->addArgument( 'tag', InputArgument::REQUIRED, 'The SVN tag to be released.' )
 			->addOption( 'checksum_zip', 'c', InputOption::VALUE_OPTIONAL, 'The URL of the ZIP file in case you want to do a Checksum.' )

@@ -29,7 +29,13 @@ When dealing with WordPress.org SVN release it's time consuming to do a checksum
   -v|vv|vvv, --verbose               Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
 ```
 
+### Example:
+```
+tut svn:release the-events-calendar 6.0.0 -t ~/stellarwp/tmp/
+```
+
 ### Help:
 ```
-  This command allows you to update what is the Stable Tag version of a WP.org plugin.
+  This command allows you to update which version of a plugin the "stable" tag applies to WordPress.org..
  ```
+<!-- @TODO: add more option descriptions -->
