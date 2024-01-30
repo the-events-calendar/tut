@@ -8,6 +8,10 @@ When dealing with WordPress.org SVN release it can be extremely time consuming t
 ```
   tut svn:tag [options] [--] <plugin> <source_tag> <destination_tag>
 ```
+  or:
+```
+  tut svn:tag <plugin> <source_tag> <destination_tag> [options]
+```
 
 ### Arguments:
 ```
@@ -31,7 +35,13 @@ When dealing with WordPress.org SVN release it can be extremely time consuming t
   -v|vv|vvv, --verbose               Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
 ```
 
-### Help:
+### Example:
 ```
-  This command allows you to create a new SVN tag from an existing tag and apply changes from a ZIP file.
+tut svn:tag the-events-calendar 6.0.0 6.0.1 --zip_url="https://my-site.com/test-zip?file=the-events-calendar.6.0.1.zip" -t ~/stellarwp/tmp/
 ```
+
+### Help
+```
+This command allows you to create a new SVN tag from an existing tag on WordPress.org and apply changes from a ZIP file.
+```
+<!-- @TODO: add more option descriptions -->
