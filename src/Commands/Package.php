@@ -595,7 +595,7 @@ class Package extends Command {
 
 				// package up the zip
 				$this->output->writeln( '<fg=cyan>* Zipping content</>', OutputInterface::VERBOSITY_VERBOSE );
-				$process = $this->run_process( $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp zip' );
+				$process = $this->run_process( $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use --silent && ./node_modules/.bin/gulp zip' );
 
 				$this->run_process( 'git checkout package.json' );
 			}
@@ -759,10 +759,10 @@ class Package extends Command {
 		$this->run_process( $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm install $(cat .nvmrc)' );
 
 		$pool = new Pool();
-		$pool->add( new Process( $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && npm ci' ), [ 'npm' ] );
+		$pool->add( new Process( $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use --silent && npm ci' ), [ 'npm' ] );
 
 		if ( $has_common ) {
-			$pool->add( new Process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && npm ci' ), [ 'npm common' ] );
+			$pool->add( new Process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use --silent && npm ci' ), [ 'npm common' ] );
 		}
 
 		$composer_processes = $this->get_composer_processes( 'install', $plugin, '--no-dev' );
@@ -796,9 +796,9 @@ class Package extends Command {
 			$this->output->writeln( '<fg=cyan;options=bold>Fetching common lang files</>', OutputInterface::VERBOSITY_NORMAL );
 			$this->output->writeln( '<fg=cyan>* Compiling common PostCSS</>', OutputInterface::VERBOSITY_VERBOSE );
 			$this->output->writeln( '<fg=cyan>* Compressing common JS</>', OutputInterface::VERBOSITY_VERBOSE );
-			$pool->add( new Process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp glotpress' ), [ 'glotpress common' ] );
-			$pool->add( new Process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp postcss' ), [ 'postcss common' ] );
-			$pool->add( new Process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp compress-js' ), [ 'compress-js common' ] );
+			$pool->add( new Process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use --silent && ./node_modules/.bin/gulp glotpress' ), [ 'glotpress common' ] );
+			$pool->add( new Process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use --silent && ./node_modules/.bin/gulp postcss' ), [ 'postcss common' ] );
+			$pool->add( new Process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use --silent && ./node_modules/.bin/gulp compress-js' ), [ 'compress-js common' ] );
 		}
 
 		$lines = new Lines( $this->output, $pool );
@@ -806,14 +806,14 @@ class Package extends Command {
 
 		if ( $has_common ) {
 			$this->output->writeln( '<fg=cyan>* Compressing common CSS</>', OutputInterface::VERBOSITY_VERBOSE );
-			$this->run_process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp compress-css' );
+			$this->run_process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use --silent && ./node_modules/.bin/gulp compress-css' );
 		}
 
 		$this->output->writeln( '<fg=cyan>* Running npm run build</>', OutputInterface::VERBOSITY_VERBOSE );
-		$this->run_process($this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && npm run build' );
+		$this->run_process($this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use --silent && npm run build' );
 
 		$this->output->writeln('<fg=cyan>* Grunt packaging</>', OutputInterface::VERBOSITY_VERBOSE);
-		$process = $this->run_process($this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && grunt build', true, 900 );
+		$process = $this->run_process($this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use --silent && grunt build', true, 900 );
 
 		return $process;
 	}
@@ -840,17 +840,17 @@ class Package extends Command {
 		$this->output->writeln( '<fg=cyan>* Compiling PostCSS</>', OutputInterface::VERBOSITY_VERBOSE );
 		$this->output->writeln( '<fg=cyan>* Compressing JS</>', OutputInterface::VERBOSITY_VERBOSE );
 
-		$pool->add( new Process( $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp glotpress' ), [ 'glotpress' ] );
-		$pool->add( new Process( $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp postcss' ), [ 'postcss' ] );
-		$pool->add( new Process( $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp compress-js' ), [ 'compress-js' ] );
+		$pool->add( new Process( $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use --silent && ./node_modules/.bin/gulp glotpress' ), [ 'glotpress' ] );
+		$pool->add( new Process( $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use --silent && ./node_modules/.bin/gulp postcss' ), [ 'postcss' ] );
+		$pool->add( new Process( $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use --silent && ./node_modules/.bin/gulp compress-js' ), [ 'compress-js' ] );
 
 		if ( $has_common ) {
 			$this->output->writeln( '<fg=cyan;options=bold>Fetching common lang files</>', OutputInterface::VERBOSITY_NORMAL );
 			$this->output->writeln( '<fg=cyan>* Compiling common PostCSS</>', OutputInterface::VERBOSITY_VERBOSE );
 			$this->output->writeln( '<fg=cyan>* Compressing common JS</>', OutputInterface::VERBOSITY_VERBOSE );
-			$pool->add( new Process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp glotpress' ), [ 'glotpress common' ] );
-			$pool->add( new Process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp postcss' ), [ 'postcss common' ] );
-			$pool->add( new Process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp compress-js' ), [ 'compress-js common' ] );
+			$pool->add( new Process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use --silent && ./node_modules/.bin/gulp glotpress' ), [ 'glotpress common' ] );
+			$pool->add( new Process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use --silent && ./node_modules/.bin/gulp postcss' ), [ 'postcss common' ] );
+			$pool->add( new Process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use --silent && ./node_modules/.bin/gulp compress-js' ), [ 'compress-js common' ] );
 		}
 
 		$lines = new Lines( $this->output, $pool );
@@ -858,18 +858,18 @@ class Package extends Command {
 
 		$this->output->writeln('<fg=cyan>* Compressing CSS</>', OutputInterface::VERBOSITY_VERBOSE);
 
-		$process = $this->run_process($this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp compress-css');
+		$process = $this->run_process($this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use --silent && ./node_modules/.bin/gulp compress-css');
 
 		if ( $has_common ) {
 			$this->output->writeln( '<fg=cyan>* Compressing common CSS</>', OutputInterface::VERBOSITY_VERBOSE );
-			$this->run_process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp compress-css' );
+			$this->run_process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use --silent && ./node_modules/.bin/gulp compress-css' );
 		}
 
 		if ( file_exists( 'webpack.config.js' ) ) {
 			// running webpack
 			$this->output->writeln( '<fg=cyan>* Webpack build</>', OutputInterface::VERBOSITY_VERBOSE );
 			// gulp webpack with a timeout of 15 minutes
-			$process = $this->run_process( $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use && ./node_modules/.bin/gulp webpack', true, 900 );
+			$process = $this->run_process( $this->get_source_command() . ' ' . $this->get_nvm_path() . ' && nvm use --silent && ./node_modules/.bin/gulp webpack', true, 900 );
 		}
 
 		return $process;
