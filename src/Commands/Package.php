@@ -734,7 +734,7 @@ class Package extends Command {
 	private function get_composer_processes( $command, $plugin, $params = '' ) {
 		$processes  = [];
 		$has_common = $this->has_common( $plugin );
-		$command    = in_array( $command, [ 'install', 'update' ] ) ? $command : 'update';
+		$command    = in_array( $command, [ 'install', 'update' ] ) ? $comma`nd : 'update';
 
 		$processes[] = new Process( "{$this->composer_php_path} composer {$command} --ignore-platform-reqs {$params} && composer dump-autoload {$params} --optimize" );
 
@@ -759,7 +759,7 @@ class Package extends Command {
 		$this->run_process( $this->get_source_command() . ' ' . $this->get_nvm_path() . ' --no-use' . ' && nvm install $(cat .nvmrc)' );
 
 		$pool = new Pool();
-		$pool->add( new Process( 'nvm use --silent --no-install && npm ci' ), [ 'npm' ] );
+		$pool->add( new Process( $this->get_source_command() . ' ' . $this->get_nvm_path() . ' --no-use' . ' nvm use --silent --no-install && npm ci' ), [ 'npm' ] );
 
 		if ( $has_common ) {
 			$pool->add( new Process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' --no-use' . ' && nvm use --silent --no-install && npm ci' ), [ 'npm common' ] );
