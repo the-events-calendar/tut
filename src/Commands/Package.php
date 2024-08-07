@@ -759,7 +759,7 @@ class Package extends Command {
 		$this->run_process( $this->get_source_command() . ' ' . $this->get_nvm_path() . ' --no-use' . ' && nvm install $(cat .nvmrc)' );
 
 		$pool = new Pool();
-		$pool->add( new Process( $this->get_source_command() . ' ' . $this->get_nvm_path() . ' --no-use' . ' && nvm use --silent --no-install && npm ci' ), [ 'npm' ] );
+		$pool->add( new Process( 'nvm use --silent --no-install && npm ci' ), [ 'npm' ] );
 
 		if ( $has_common ) {
 			$pool->add( new Process( 'cd common && ' . $this->get_source_command() . ' ' . $this->get_nvm_path() . ' --no-use' . ' && nvm use --silent --no-install && npm ci' ), [ 'npm common' ] );
