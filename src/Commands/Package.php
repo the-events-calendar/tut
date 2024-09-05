@@ -49,6 +49,11 @@ class Package extends Command {
 	protected $clear = false;
 
 	/**
+	 * @var ?string Path to a bash executable that will trigger before ZIP.
+	 */
+	protected $action_before_zip = 'bin/action-before-zip.sh';
+
+	/**
 	 * @var string Number of the build
 	 */
 	protected $default_build_number = null;
@@ -155,6 +160,7 @@ class Package extends Command {
 			->addOption( 'release', 'r', InputOption::VALUE_OPTIONAL, 'Version to package' )
 			->addOption( 'clear', '', InputOption::VALUE_NONE, 'Remove any untracked file' )
 			->addOption( 'composer_php_path', '', InputOption::VALUE_OPTIONAL, 'Path to PHP version to use when monkeying with composer' )
+			->addOption( 'before_zip', '', InputOption::VALUE_OPTIONAL, 'Path to a bash executable that will trigger before ZIP.' )
 			->addOption( 'build_number', '', InputOption::VALUE_OPTIONAL, 'Override the dev version build number. Defaults to commit timestamp.' );
 	}
 
@@ -181,6 +187,7 @@ class Package extends Command {
 		$this->final                = $this->final ?: $input->getOption( 'final' );
 		$this->clear                = $this->clear ?: $input->getOption( 'clear' );
 		$this->default_build_number = $this->default_build_number ?: $input->getOption( 'build_number' );
+		$this->action_before_zip    = $this->action_before_zip ?: $input->getOption( 'before_zip' );
 		$this->composer_php_path    = $input->getOption( 'composer_php_path' ) ?: null;
 		$this->composer_php_path    = preg_replace( '![^a-z0-9/\-_\.]!', '', $this->composer_php_path );
 		$this->composer_php_path    = preg_match( '!php[0-9\.\-]*$!', $this->composer_php_path ) ? $this->composer_php_path : null;
@@ -575,6 +582,13 @@ class Package extends Command {
 				$package_json_contents->version = $version;
 				file_put_contents( 'package.json', json_encode( $package_json_contents ) );
 
+				$action_before_zip = $plugin_dir . '/' . $this->action_before_zip;
+				if ( file_exists( $action_before_zip ) ) {
+					chdir( $plugin_dir );
+					$this->output->writeln( '<fg=cyan>* Before ZIP Action</>', OutputInterface::VERBOSITY_VERBOSE );
+					$this->run_process( 'bash ' . $action_before_zip );
+				}
+
 				chdir( $plugin_dir );
 				$mv_command = 'mv ' . $plugin_dir . '/build/' . $rcp_zipped_file .' ' . $this->origin_dir . '/' . $file;
 				$process = $this->run_process( $mv_command );
@@ -592,6 +606,13 @@ class Package extends Command {
 				$package_json_contents          = json_decode( file_get_contents( 'package.json' ) );
 				$package_json_contents->version = $version;
 				file_put_contents( 'package.json', json_encode( $package_json_contents ) );
+
+				$action_before_zip = $plugin_dir . '/' . $this->action_before_zip;
+				if ( file_exists( $action_before_zip ) ) {
+					chdir( $plugin_dir );
+					$this->output->writeln( '<fg=cyan>* Before ZIP Action</>', OutputInterface::VERBOSITY_VERBOSE );
+					$this->run_process( 'bash ' . $action_before_zip );
+				}
 
 				// package up the zip
 				$this->output->writeln( '<fg=cyan>* Zipping content</>', OutputInterface::VERBOSITY_VERBOSE );
