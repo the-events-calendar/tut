@@ -187,7 +187,11 @@ class Package extends Command {
 		$this->final                = $this->final ?: $input->getOption( 'final' );
 		$this->clear                = $this->clear ?: $input->getOption( 'clear' );
 		$this->default_build_number = $this->default_build_number ?: $input->getOption( 'build_number' );
-		$this->action_before_zip    = $this->action_before_zip ?: $input->getOption( 'before_zip' );
+
+		if ( $input->hasOption( 'before_zip' ) ) {
+			$this->action_before_zip    = $input->getOption( 'before_zip' );
+		}
+
 		$this->composer_php_path    = $input->getOption( 'composer_php_path' ) ?: null;
 		$this->composer_php_path    = preg_replace( '![^a-z0-9/\-_\.]!', '', $this->composer_php_path );
 		$this->composer_php_path    = preg_match( '!php[0-9\.\-]*$!', $this->composer_php_path ) ? $this->composer_php_path : null;
