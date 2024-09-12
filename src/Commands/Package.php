@@ -189,7 +189,8 @@ class Package extends Command {
 		$this->default_build_number = $this->default_build_number ?: $input->getOption( 'build_number' );
 
 		if ( $input->hasOption( 'before_zip' ) ) {
-			$this->action_before_zip    = $input->getOption( 'before_zip' );
+			$before_zip_option = $input->getOption( 'before_zip' );
+			$this->action_before_zip    = empty( $before_zip_option ) ? $this->action_before_zip  : $before_zip_option;
 		}
 
 		$this->composer_php_path    = $input->getOption( 'composer_php_path' ) ?: null;
