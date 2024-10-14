@@ -165,10 +165,6 @@ class Package extends Command {
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ) {
-		if ( ! $this->nvm_exists() ) {
-			$this->io->error( 'NVM needs to exist within ' . self::get_home_dir() );
-			exit( 1 );
-		}
 
 		$this->stopwatch = new Stopwatch();
 
