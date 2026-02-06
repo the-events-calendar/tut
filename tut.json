@@ -55,17 +55,6 @@
 			"submodulesync" : true
 		},
 		{
-			"repo"      : "the-events-calendar/events-community-tickets",
-			"name"      : "events-community-tickets",
-			"bootstrap" : "events-community-tickets.php",
-			"main"      : "src/Tribe/Main.php",
-			"version"   : "VERSION",
-			"alias"     : [ "ect", "community-tickets", "ct", "the-events-calendar-community-events-tickets" ],
-			"has_readme": true,
-			"free"      : false,
-			"submodulesync" : true
-		},
-		{
 			"repo"      : "the-events-calendar/events-eventbrite",
 			"name"      : "events-eventbrite",
 			"bootstrap" : "tribe-eventbrite.php",
@@ -121,28 +110,6 @@
 			"submodulesync" : true
 		},
 		{
-			"repo"      : "the-events-calendar/events-virtual",
-			"name"      : "events-virtual",
-			"bootstrap" : "events-virtual.php",
-			"main"      : "src/Tribe/Plugin_Register.php",
-			"version"   : "VERSION",
-			"alias"     : [ "ve", "ev" ],
-			"has_readme": true,
-			"free"      : false,
-			"submodulesync" : true
-		},
-		{
-			"repo"      : "the-events-calendar/event-automator",
-			"name"      : "event-automator",
-			"bootstrap" : "event-automator.php",
-			"main"      : "src/Event_Automator/Plugin.php",
-			"version"   : "VERSION",
-			"alias"     : [ "events-automator", "automator", "auto", "eva" ],
-			"has_readme": true,
-			"free"      : false,
-			"submodulesync" : true
-		},
-		{
 			"repo"      : "stellarwp/restrict-content-pro",
 			"name"      : "restrict-content-pro",
 			"bootstrap" : "restrict-content-pro.php",
@@ -164,16 +131,6 @@
 			"alias"     : [ "ld", "sfwd-lms", "learndash" ],
 			"has_readme": false,
 			"free"      : false
-		},
-		{
-			"repo"      : "the-events-calendar/events-elasticsearch",
-			"name"      : "events-elasticsearch",
-			"bootstrap" : "events-elasticsearch.php",
-			"main"      : "src/Tribe/Main.php",
-			"version"   : "const VERSION",
-			"alias"     : [ "elasticsearch", "es", "the-events-calendar-elasticsearch" ],
-			"has_readme": true,
-			"free"      : true
 		},
 		{
 			"repo"      : "the-events-calendar/advanced-post-manager",
@@ -224,27 +181,6 @@
 			"alias"     : [ "give" ],
 			"has_readme": true,
 			"free"      : true
-		},
-		{
-			"repo"      : "the-events-calendar/loxi-event-calendar",
-			"name"      : "loxi-event-calendar",
-			"bootstrap" : "loxi-event-calendar.php",
-			"main"      : "src/Tribe/Main.php",
-			"version"   : "const VERSION",
-			"alias"     : [ "lec", "loxi-plugin" ],
-			"has_readme": true,
-			"free"      : true
-		},
-		{
-			"repo"          : "the-events-calendar/event-tickets-wallet-plus",
-			"name"          : "event-tickets-wallet-plus",
-			"bootstrap"     : "event-tickets-wallet-plus.php",
-			"main"          : "src/Tickets_Wallet_Plus/Plugin_Register.php",
-			"version"       : "VERSION",
-			"alias"         : [ "wallet+", "wallet-plus", "etwp", "etwplus", "etw+", "event-tickets-wallet", "event-tickets-wallet-plus" ],
-			"has_readme"    : true,
-			"free"          : false,
-			"submodulesync" : true
 		},
 		{
 			"repo"          : "stellarwp/event-schedule-manager",

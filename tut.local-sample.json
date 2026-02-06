@@ -17,14 +17,6 @@
 			"free"      : false
 		},
 		{
-			"name"      : "events-community-tickets",
-			"bootstrap" : "events-community-tickets.php",
-			"main"      : "src/Tribe/Main.php",
-			"version"   : "VERSION",
-			"alias"     : [ "ect", "community-tickets", "ct", "the-events-calendar-community-events-tickets" ],
-			"free"      : false
-		},
-		{
 			"name"      : "events-eventbrite",
 			"bootstrap" : "tribe-eventbrite.php",
 			"main"      : "src/Tribe/Main.php",
@@ -65,22 +57,6 @@
 			"free"      : false
 		},
 		{
-			"name"      : "events-virtual",
-			"bootstrap" : "events-virtual.php",
-			"main"      : "src/Tribe/Plugin.php",
-			"version"   : "VERSION",
-			"alias"     : [ "ve", "ev" ],
-			"free"      : true
-		},
-		{
-			"name"      : "events-elasticsearch",
-			"bootstrap" : "events-elasticsearch.php",
-			"main"      : "src/Tribe/Main.php",
-			"version"   : "const VERSION",
-			"alias"     : [ "elasticsearch", "es", "the-events-calendar-elasticsearch" ],
-			"free"      : true
-		},
-		{
 			"name"      : "advanced-post-manager",
 			"bootstrap" : "tribe-apm.php",
 			"main"      : "tribe-apm.php",
@@ -118,14 +94,6 @@
 			"main"      : "gigpress.php",
 			"version"   : "define('GIGPRESS_VERSION')",
 			"alias"     : [ "gig" ],
-			"free"      : true
-		},
-		{
-			"name"      : "loxi-event-calendar",
-			"bootstrap" : "loxi-event-calendar.php",
-			"main"      : "src/Tribe/Main.php",
-			"version"   : "const VERSION",
-			"alias"     : [ "lec", "loxi-plugin" ],
 			"free"      : true
 		}
 	]
